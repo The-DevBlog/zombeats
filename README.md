@@ -1,15 +1,7 @@
-# Zombeats - Bevy Game Jam #3
-
-This is my game entry for the [Bevy Game Jam #3](https://itch.io/jam/bevy-jam-3).
+# Zombeats
 
 **Zombeats** is a third person, endless survival game with a primary objective of slaying as many zombies as possible.
 The settings is staged on a black and white checkered dance floor with upbeat music playing in the background, hence the title, *Zombeats*.
-
----
-### Game Jam Theme
-The game jam theme is ***Side Effects***. 
-
-The side effects in *Zombeats* take form of three different *powerups* that the player can pickup: *Stamina Refill*, *x2 Damage*, and *+20 Health*.
 
 ---
 ### Controls
