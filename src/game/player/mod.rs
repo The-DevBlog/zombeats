@@ -23,11 +23,13 @@ impl Plugin for PlayerPlugin {
             .add_systems((spawn_player, reset_killcount).in_schedule(OnEnter(AppState::Game)))
             .add_systems(
                 (
+                    remove_hp,
                     move_player_keyboard,
                     move_player_gamepad,
                     update_stamina,
                     update_health,
                     player_map_bounds,
+                    increase_killcount,
                 )
                     .in_set(OnUpdate(AppState::Game)),
             );

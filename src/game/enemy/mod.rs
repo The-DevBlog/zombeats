@@ -1,10 +1,12 @@
 use bevy::prelude::*;
 
 pub mod enemy_cmps;
+pub mod enemy_evs;
 pub mod enemy_res;
 mod enemy_sys;
 
 use crate::AppState;
+use enemy_evs::*;
 use enemy_res::*;
 use enemy_sys::*;
 
@@ -22,9 +24,12 @@ impl Plugin for EnemyPlugin {
         app.init_resource::<EnemySpawnTimer>()
             .init_resource::<RaiseDifficultyTimer>()
             .init_resource::<EnemyHp>()
-            .add_system(reset_health.in_schedule(OnEnter(AppState::Game)))
+            .add_event::<HitPlayerEv>()
+            .add_event::<EnemyDeathEv>()
+            .add_system(reset_hp.in_schedule(OnEnter(AppState::Game)))
             .add_systems(
                 (
+                    despawn_enemy,
                     spawn_enemies,
                     enemy_tracking,
                     enemy_attack,

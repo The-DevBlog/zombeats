@@ -4,6 +4,7 @@ use bevy_rapier3d::prelude::*;
 use super::player_res::KillCount;
 use super::{player_cmps::*, PLAYER_HP, PLAYER_SIZE, PLAYER_SPEED, SPRINT_SPEED, STAMINA};
 use crate::game::camera::camera_cmps::CustomCamera;
+use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
@@ -234,4 +235,21 @@ pub fn player_is_dead(player_q: Query<&Hp, With<Player>>) -> bool {
 
 pub fn reset_killcount(mut kills: ResMut<KillCount>) {
     kills.0 = 0;
+}
+
+pub fn remove_hp(mut evr: EventReader<HitPlayerEv>, mut player_q: Query<&mut Hp, With<Player>>) {
+    for ev in evr.iter() {
+        if let Ok(mut hp) = player_q.get_single_mut() {
+            hp.value -= ev.0;
+        }
+    }
+}
+
+pub fn increase_killcount(
+    mut kills: ResMut<KillCount>,
+    mut enemy_death_evr: EventReader<EnemyDeathEv>,
+) {
+    for _ev in enemy_death_evr.iter() {
+        kills.0 += 1;
+    }
 }
