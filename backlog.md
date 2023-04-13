@@ -34,3 +34,6 @@
   - zoom in: Dpad up
   - zoom out: Dpad down
 - Add red fill to player when hit by enemy
+
+# Open Questions
+- Should I be using the 'Game' component to despawn everything when game is over? Is there a better way to do this? 

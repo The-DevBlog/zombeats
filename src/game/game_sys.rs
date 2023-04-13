@@ -5,7 +5,7 @@ use bevy::{
 
 use crate::{gamepad::gamepad_rcs::MyGamepad, AppState};
 
-use super::{game_cmps::Game, game_res::GameTime};
+use super::{game_cmps::*, game_evs::*, game_res::*};
 
 pub fn exit_game(
     btns: Res<Input<GamepadButton>>,
@@ -25,8 +25,14 @@ pub fn exit_game(
     }
 }
 
-pub fn game_over(mut next_app_state: ResMut<NextState<AppState>>) {
-    next_app_state.set(AppState::GameOver);
+/// Change state to GameOver when GameOver event is fired
+pub fn game_over(
+    mut next_app_state: ResMut<NextState<AppState>>,
+    mut game_over_evr: EventReader<GameOver>,
+) {
+    for _ev in game_over_evr.iter() {
+        next_app_state.set(AppState::GameOver);
+    }
 }
 
 pub fn despawn_game(mut cmds: Commands, all_q: Query<Entity, With<Game>>) {

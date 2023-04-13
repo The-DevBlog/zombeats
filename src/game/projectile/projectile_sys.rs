@@ -1,18 +1,19 @@
 use bevy::prelude::*;
-use rand::Rng;
 
 use crate::{
     game::{
         camera::camera_cmps::CustomCamera,
         enemy::enemy_cmps::Enemy,
-        game_cmps::{Damage, Game, Hp},
-        player::{player_cmps::Player, player_res::KillCount},
+        game_cmps::{Damage, Game},
+        player::player_cmps::Player,
         world::MAP_SIZE,
     },
     gamepad::gamepad_rcs::MyGamepad,
 };
 
-use super::{projectile_cmps::Projectile, projectile_res::FireRate, PROJECTILE_SPEED};
+use super::{
+    projectile_cmps::Projectile, projectile_evs::HitEv, projectile_res::FireRate, PROJECTILE_SPEED,
+};
 
 pub fn shoot_projectile(
     mut cmds: Commands,
@@ -96,18 +97,15 @@ pub fn move_projectile(
 }
 
 /// Detect projectile-enemy collision
-/// Despawn enemy if hp is <= 0
-/// Increase kill count
+/// Fire hit event
 pub fn hit_enemy(
     mut cmds: Commands,
-    audio: Res<Audio>,
-    assets: Res<AssetServer>,
+    mut hit_evw: EventWriter<HitEv>,
     player_q: Query<&Damage, (With<Player>, Without<Enemy>)>,
-    mut enemy_q: Query<(Entity, &Transform, &mut Hp), With<Enemy>>,
+    enemy_q: Query<(Entity, &Transform), With<Enemy>>,
     projectile_q: Query<(Entity, &Transform), With<Projectile>>,
-    mut kills: ResMut<KillCount>,
 ) {
-    for (enemy_ent, enemy_trans, mut enemy_hp) in enemy_q.iter_mut() {
+    for (enemy_ent, enemy_trans) in enemy_q.iter() {
         for (projectile_ent, projectile_trans) in projectile_q.iter() {
             let distance = enemy_trans
                 .translation
@@ -117,23 +115,13 @@ pub fn hit_enemy(
 
             // reduce enemy hp and despawn projectile
             if distance < 0.25 {
-                // despawn enemy
-                if enemy_hp.value <= 0.0 {
-                    cmds.entity(enemy_ent).despawn_recursive();
+                // fire hit event
+                hit_evw.send(HitEv {
+                    dmg: dmg.value,
+                    ent: enemy_ent,
+                });
 
-                    // increase kill count
-                    kills.0 += 1;
-                }
-
-                // decrease enemy hp and despawn projectile
-                enemy_hp.value -= dmg.value;
                 cmds.entity(projectile_ent).despawn_recursive();
-
-                // play enemy hit noise
-                let num = rand::thread_rng().gen_range(0..=4);
-                let file = format!(r"audio\enemy\hurt_{}.ogg", num);
-                let sound = assets.load(file);
-                audio.play(sound);
             }
         }
     }

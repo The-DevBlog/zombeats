@@ -2,13 +2,16 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
 use super::player_res::KillCount;
-use super::{player_cmps::*, PLAYER_HP, PLAYER_SIZE, PLAYER_SPEED, SPRINT_SPEED, STAMINA};
+use super::{player_cmps::*, *};
 use crate::game::camera::camera_cmps::CustomCamera;
+use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
+use crate::game::game_evs::GameOver;
 use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
 
-pub fn spawn_player(
+/// Spawn Player
+pub fn spawn(
     mut cmds: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -59,8 +62,8 @@ pub fn spawn_player(
     cmds.entity(player).push_children(&[camera]);
 }
 
-/// keeps player within the map bounds
-pub fn player_map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
+/// Keep player within the map bounds
+pub fn map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
     if let Ok(mut trans) = player_q.get_single_mut() {
         // +Z bounds
         if trans.translation.z + PLAYER_SIZE / 2.0 > MAP_SIZE / 2.0 {
@@ -84,7 +87,7 @@ pub fn player_map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
     }
 }
 
-pub fn move_player_keyboard(
+pub fn keyboard_movement(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
     mut player_q: Query<(&mut Transform, &Speed, &mut IsSprinting, &Stamina), With<Player>>,
@@ -130,7 +133,7 @@ pub fn move_player_keyboard(
     }
 }
 
-pub fn move_player_gamepad(
+pub fn gamepad_movement(
     time: Res<Time>,
     axis: Res<Axis<GamepadAxis>>,
     btns: Res<Input<GamepadButton>>,
@@ -205,7 +208,7 @@ pub fn update_stamina(
 
         // if regen timer finished & stamina is less than max, regenerate stamina
         } else if stamina.regen_time.just_finished() && stamina.value < stamina.max {
-            stamina.value += 0.025;
+            stamina.value += STAMINA_REGEN_AMOUNT;
 
         // if stamina is less than the max, tick the regen timer
         } else if stamina.value < stamina.max {
@@ -216,22 +219,37 @@ pub fn update_stamina(
     }
 }
 
-pub fn update_health(mut player_q: Query<&mut Hp, With<Player>>) {
-    if let Ok(mut hp) = player_q.get_single_mut() {
-        if hp.value < 0.0 {
-            hp.value = 0.0;
+pub fn death(player_q: Query<&Hp, With<Player>>, mut game_over_evw: EventWriter<GameOver>) {
+    if let Ok(hp) = player_q.get_single() {
+        if hp.value <= 0.0 {
+            game_over_evw.send(GameOver);
         }
     }
 }
 
-pub fn player_is_dead(player_q: Query<&Hp, With<Player>>) -> bool {
-    if let Ok(hp) = player_q.get_single() {
-        hp.value <= 0.0
-    } else {
-        false
+pub fn decrease_hp(mut evr: EventReader<HitPlayerEv>, mut player_q: Query<&mut Hp, With<Player>>) {
+    for ev in evr.iter() {
+        if let Ok(mut hp) = player_q.get_single_mut() {
+            // only decrease hp if hp is > 0
+            if hp.value > 0.0 {
+                hp.value -= ev.0;
+
+                if hp.value < 0.0 {
+                    hp.value = 0.0;
+                }
+            }
+        }
     }
 }
-
 pub fn reset_killcount(mut kills: ResMut<KillCount>) {
     kills.0 = 0;
+}
+
+pub fn increase_killcount(
+    mut kills: ResMut<KillCount>,
+    mut enemy_death_evr: EventReader<EnemyDeathEv>,
+) {
+    for _ev in enemy_death_evr.iter() {
+        kills.0 += 1;
+    }
 }
