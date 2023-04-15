@@ -30,9 +30,6 @@
     - run
     - shoot
     - death
-- Adjust zoom controls
-  - zoom in: Dpad up
-  - zoom out: Dpad down
 - Add red fill to player when hit by enemy
 
 # Open Questions

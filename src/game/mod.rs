@@ -38,7 +38,7 @@ impl Plugin for GamePlugin {
             .add_event::<GameOver>()
             .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
             // .add_plugin(RapierDebugRenderPlugin::default())
-            // .add_plugin(MusicPlugin)
+            .add_plugin(MusicPlugin)
             .add_plugin(WorldPlugin)
             .add_plugin(PowerUpsPlugin)
             .add_plugin(CameraPlugin)
