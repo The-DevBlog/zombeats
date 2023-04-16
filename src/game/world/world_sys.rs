@@ -10,32 +10,18 @@ use super::{
     MAP_SIZE, WALL_HEIGHT,
 };
 
-pub fn spawn_ground(
-    mut cmds: Commands,
-    assets: Res<AssetServer>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    let floor_txtr = assets.load("textures/floor.png");
-
-    let material_handle = materials.add(StandardMaterial {
-        base_color_texture: Some(floor_txtr.clone()),
-        ..default()
-    });
-
-    cmds.spawn((
-        PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Plane {
-                size: MAP_SIZE,
-                ..default()
-            })),
-            material: material_handle,
+pub fn spawn_ground(mut cmds: Commands, assets: Res<AssetServer>) {
+    let floor = (
+        SceneBundle {
+            scene: assets.load("models/Floor.gltf#Scene0"),
             ..default()
         },
-        Game,
         Collider::cuboid(MAP_SIZE / 2.0, 0.0, MAP_SIZE / 2.0),
-        Name::new("Ground"),
-    ));
+        Game,
+        Name::new("Floor"),
+    );
+
+    cmds.spawn(floor);
 }
 
 pub fn spawn_walls(
@@ -80,17 +66,37 @@ pub fn spawn_light(mut cmds: Commands) {
     cmds.spawn((
         PointLightBundle {
             point_light: PointLight {
-                color: Color::GREEN.into(),
                 intensity: 5000.0,
                 shadows_enabled: true,
                 ..default()
             },
-            transform: Transform::from_xyz(0.0, 5.0, 0.0),
+            transform: Transform::from_xyz(-5.0, 5.0, -4.5),
             ..default()
         },
         Game,
         Name::new("Point Light"),
     ));
+}
+
+pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
+    let table =
+        |x: f32, z: f32, asset_server: &AssetServer| -> (SceneBundle, Collider, Game, Name) {
+            (
+                SceneBundle {
+                    scene: asset_server.load("models/table.gltf#Scene0"),
+                    transform: Transform::from_xyz(x, 0.0, z),
+                    ..default()
+                },
+                Collider::cylinder(1.0, 1.0),
+                Game,
+                Name::new("Table"),
+            )
+        };
+
+    cmds.spawn(table(2.0, 0.0, &assets));
+    cmds.spawn(table(4.0, 0.0, &assets));
+    cmds.spawn(table(6.0, 0.0, &assets));
+    cmds.spawn(table(0.0, 0.0, &assets));
 }
 
 pub fn change_light_clr(

@@ -46,7 +46,7 @@ impl Plugin for GamePlugin {
             .add_plugin(ProjectilePlugin)
             .add_plugin(EnemyPlugin)
             .add_plugin(HudPlugin)
-            .add_systems((exit_game, hide_cursor, game_over).in_set(OnUpdate(AppState::Game)))
+            .add_systems((exit_game, game_over).in_set(OnUpdate(AppState::Game)))
             .add_systems((despawn_game, show_cursor).in_schedule(OnExit(AppState::Game)));
     }
 }
