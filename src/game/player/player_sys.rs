@@ -185,7 +185,7 @@ pub fn gamepad_movement(
 
         // sprint
         let mut sprint = 1.0;
-        let left_thumb = GamepadButton::new(gamepad, GamepadButtonType::LeftThumb);
+        let left_thumb = GamepadButton::new(gamepad, GamepadButtonType::LeftTrigger);
         if btns.pressed(left_thumb) && stamina.value > 0.0 {
             sprint = SPRINT_SPEED;
             sprinting.0 = true;
