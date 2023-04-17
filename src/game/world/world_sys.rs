@@ -102,7 +102,8 @@ pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
 pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
     let bar_table = (
         SceneBundle {
-            scene: assets.load("models/bar_table.gltf#Scene0"),
+            scene: assets.load("models/BarTable.gltf#Scene0"),
+            transform: Transform::from_xyz(8.8, 0.0, 7.0),
             ..default()
         },
         Game,

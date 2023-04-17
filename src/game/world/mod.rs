@@ -23,7 +23,7 @@ impl Plugin for WorldPlugin {
                     spawn_light,
                     spawn_walls,
                     spawn_tables,
-                    // spawn_bar_table,
+                    spawn_bar_table,
                 )
                     .in_schedule(OnEnter(AppState::Game)),
             );
