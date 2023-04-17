@@ -18,7 +18,13 @@ impl Plugin for WorldPlugin {
         app.init_resource::<LightTimer>()
             .init_resource::<Colors>()
             .add_systems(
-                (spawn_ground, spawn_light, spawn_walls, spawn_tables)
+                (
+                    spawn_ground,
+                    spawn_light,
+                    spawn_walls,
+                    spawn_tables,
+                    // spawn_bar_table,
+                )
                     .in_schedule(OnEnter(AppState::Game)),
             );
         // .add_system(change_light_clr.in_set(OnUpdate(AppState::Game)));

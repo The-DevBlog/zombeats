@@ -13,7 +13,7 @@ use super::{
 pub fn spawn_ground(mut cmds: Commands, assets: Res<AssetServer>) {
     let floor = (
         SceneBundle {
-            scene: assets.load("models/Floor.gltf#Scene0"),
+            scene: assets.load("models/floor.gltf#Scene0"),
             ..default()
         },
         Collider::cuboid(MAP_SIZE / 2.0, 0.0, MAP_SIZE / 2.0),
@@ -93,10 +93,23 @@ pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
             )
         };
 
-    cmds.spawn(table(2.0, 0.0, &assets));
-    cmds.spawn(table(4.0, 0.0, &assets));
-    cmds.spawn(table(6.0, 0.0, &assets));
-    cmds.spawn(table(0.0, 0.0, &assets));
+    cmds.spawn(table(-0.7, 4.1, &assets));
+    cmds.spawn(table(-2.7, 8.0, &assets));
+    cmds.spawn(table(-4.3, 4.6, &assets));
+    cmds.spawn(table(-7.1, 7.7, &assets));
+}
+
+pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
+    let bar_table = (
+        SceneBundle {
+            scene: assets.load("models/bar_table.gltf#Scene0"),
+            ..default()
+        },
+        Game,
+        Name::new("Bar Table"),
+    );
+
+    cmds.spawn(bar_table);
 }
 
 pub fn change_light_clr(

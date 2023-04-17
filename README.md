@@ -28,5 +28,10 @@ The settings is staged on a black and white checkered dance floor with upbeat mu
 
 ---
 ### Credits
+Audio:
 - [Music - RGA-GT](https://opengameart.org/content/the-best-of-rga-gt-music-pack)
-- [Floor Texture - Calinou](https://opengameart.org/content/seamless-textures-0)
+
+Textures: 
+- [Calinou](https://opengameart.org/content/seamless-textures-0)
+- [Bart](https://opengameart.org/node/11950)
+- [ShareTextures](https://opengameart.org/content/real-marble-textures-collection-set-3-part-2)
