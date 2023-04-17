@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub mod world_cmps;
 pub mod world_res;
 mod world_sys;
 
@@ -19,14 +20,14 @@ impl Plugin for WorldPlugin {
             .init_resource::<Colors>()
             .add_systems(
                 (
-                    spawn_ground,
-                    spawn_light,
+                    spawn_floor,
+                    spawn_disco_light,
                     spawn_walls,
                     spawn_tables,
                     spawn_bar_table,
                 )
                     .in_schedule(OnEnter(AppState::Game)),
-            );
-        // .add_system(change_light_clr.in_set(OnUpdate(AppState::Game)));
+            )
+            .add_system(change_light_clr.in_set(OnUpdate(AppState::Game)));
     }
 }

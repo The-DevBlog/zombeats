@@ -6,11 +6,12 @@ use std::f32::consts::PI;
 use crate::game::game_cmps::Game;
 
 use super::{
+    world_cmps::DiscoLight,
     world_res::{Colors, LightTimer},
     MAP_SIZE, WALL_HEIGHT,
 };
 
-pub fn spawn_ground(mut cmds: Commands, assets: Res<AssetServer>) {
+pub fn spawn_floor(mut cmds: Commands, assets: Res<AssetServer>) {
     let floor = (
         SceneBundle {
             scene: assets.load("models/floor.gltf#Scene0"),
@@ -62,7 +63,7 @@ pub fn spawn_walls(
     cmds.spawn(wall(-MAP_SIZE, 0.0, PI / 2.0, Face::Back, "West Wall"));
 }
 
-pub fn spawn_light(mut cmds: Commands) {
+pub fn spawn_disco_light(mut cmds: Commands) {
     cmds.spawn((
         PointLightBundle {
             point_light: PointLight {
@@ -73,6 +74,7 @@ pub fn spawn_light(mut cmds: Commands) {
             transform: Transform::from_xyz(-5.0, 5.0, -4.5),
             ..default()
         },
+        DiscoLight,
         Game,
         Name::new("Point Light"),
     ));
@@ -100,6 +102,22 @@ pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
 }
 
 pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
+    let light = |pos: Vec3| -> (PointLightBundle, Name) {
+        (
+            PointLightBundle {
+                point_light: PointLight {
+                    color: Color::YELLOW_GREEN,
+                    intensity: 250.0,
+                    shadows_enabled: true,
+                    ..default()
+                },
+                transform: Transform::from_translation(pos),
+                ..default()
+            },
+            Name::new("Bar Table Light"),
+        )
+    };
+
     let bar_table = (
         SceneBundle {
             scene: assets.load("models/BarTable.gltf#Scene0"),
@@ -110,11 +128,15 @@ pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
         Name::new("Bar Table"),
     );
 
-    cmds.spawn(bar_table);
+    cmds.spawn(bar_table).with_children(|parent| {
+        parent.spawn(light(Vec3::new(0.0, 3.2, 2.0)));
+        parent.spawn(light(Vec3::new(0.0, 3.2, 0.0)));
+        parent.spawn(light(Vec3::new(0.0, 3.2, -2.0)));
+    });
 }
 
 pub fn change_light_clr(
-    mut light_q: Query<&mut PointLight, With<PointLight>>,
+    mut light_q: Query<&mut PointLight, With<DiscoLight>>,
     mut light_timer: ResMut<LightTimer>,
     time: Res<Time>,
     colors: Res<Colors>,
