@@ -1,5 +1,5 @@
 use bevy::{prelude::*, render::render_resource::Face};
-use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::{na::Translation, prelude::*};
 use rand::Rng;
 use std::f32::consts::PI;
 
@@ -83,13 +83,19 @@ pub fn spawn_disco_light(mut cmds: Commands) {
 pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
     let table =
         |x: f32, z: f32, asset_server: &AssetServer| -> (SceneBundle, Collider, Game, Name) {
-            (
-                SceneBundle {
-                    scene: asset_server.load("models/table.gltf#Scene0"),
-                    transform: Transform::from_xyz(x, 0.0, z),
+            let scene = SceneBundle {
+                scene: asset_server.load("models/table.gltf#Scene0"),
+                transform: Transform {
+                    translation: Vec3::new(x, 0.0, z),
+                    scale: Vec3::new(1.5, 1.5, 1.5),
                     ..default()
                 },
-                Collider::cylinder(1.0, 1.0),
+                ..default()
+            };
+
+            (
+                scene,
+                Collider::cylinder(0.4, 0.4),
                 Game,
                 Name::new("Table"),
             )
@@ -118,12 +124,15 @@ pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
         )
     };
 
+    let scene = SceneBundle {
+        scene: assets.load("models/BarTable.gltf#Scene0"),
+        transform: Transform::from_xyz(8.8, 0.0, 7.0),
+        ..default()
+    };
+
     let bar_table = (
-        SceneBundle {
-            scene: assets.load("models/BarTable.gltf#Scene0"),
-            transform: Transform::from_xyz(8.8, 0.0, 7.0),
-            ..default()
-        },
+        scene,
+        Collider::cuboid(0.5, 0.5, 3.1),
         Game,
         Name::new("Bar Table"),
     );
