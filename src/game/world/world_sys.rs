@@ -83,28 +83,58 @@ pub fn spawn_disco_light(mut cmds: Commands) {
 pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
     let table =
         |x: f32, z: f32, asset_server: &AssetServer| -> (SceneBundle, Collider, Game, Name) {
-            let scene = SceneBundle {
-                scene: asset_server.load("models/table.gltf#Scene0"),
-                transform: Transform {
-                    translation: Vec3::new(x, 0.0, z),
-                    scale: Vec3::new(1.5, 1.5, 1.5),
+            (
+                SceneBundle {
+                    scene: asset_server.load("models/Table.gltf#Scene0"),
+                    transform: Transform {
+                        translation: Vec3::new(x, 0.0, z),
+                        scale: Vec3::new(1.5, 1.5, 1.5),
+                        ..default()
+                    },
                     ..default()
                 },
-                ..default()
-            };
-
-            (
-                scene,
                 Collider::cylinder(0.4, 0.4),
                 Game,
                 Name::new("Table"),
             )
         };
 
-    cmds.spawn(table(-0.7, 4.1, &assets));
-    cmds.spawn(table(-2.7, 8.0, &assets));
-    cmds.spawn(table(-4.3, 4.6, &assets));
-    cmds.spawn(table(-7.1, 7.7, &assets));
+    let chair = |x: f32, z: f32, asset_server: &AssetServer| -> (SceneBundle, Collider, Name) {
+        (
+            SceneBundle {
+                scene: asset_server.load("models/Chair.gltf#Scene0"),
+                transform: Transform {
+                    scale: Vec3::new(0.1, 0.08, 0.1),
+                    translation: Vec3::new(x, 0.0, z),
+                    ..default()
+                },
+                ..default()
+            },
+            Collider::cuboid(1.0, 3.0, 1.0),
+            Name::new("Chair"),
+        )
+    };
+
+    cmds.spawn(table(-0.7, 4.1, &assets))
+        .with_children(|parent| {
+            parent.spawn(chair(0.4, 0.0, &assets));
+            parent.spawn(chair(0.0, 0.4, &assets));
+        });
+    cmds.spawn(table(-2.7, 8.0, &assets))
+        .with_children(|parent| {
+            parent.spawn(chair(-0.4, 0.0, &assets));
+            parent.spawn(chair(0.0, 0.4, &assets));
+        });
+
+    cmds.spawn(table(-4.3, 4.6, &assets))
+        .with_children(|parent| {
+            parent.spawn(chair(0.4, 0.0, &assets));
+        });
+
+    cmds.spawn(table(-7.1, 7.7, &assets))
+        .with_children(|parent| {
+            parent.spawn(chair(0.4, 0.4, &assets));
+        });
 }
 
 pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
@@ -124,14 +154,12 @@ pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
         )
     };
 
-    let scene = SceneBundle {
-        scene: assets.load("models/BarTable.gltf#Scene0"),
-        transform: Transform::from_xyz(8.8, 0.0, 7.0),
-        ..default()
-    };
-
     let bar_table = (
-        scene,
+        SceneBundle {
+            scene: assets.load("models/BarTable.gltf#Scene0"),
+            transform: Transform::from_xyz(8.8, 0.0, 7.0),
+            ..default()
+        },
         Collider::cuboid(0.5, 0.5, 3.1),
         Game,
         Name::new("Bar Table"),
