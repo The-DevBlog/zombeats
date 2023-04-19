@@ -22,7 +22,7 @@ impl Plugin for ProjectilePlugin {
             .init_resource::<FireRate>()
             .add_systems(
                 (
-                    // shoot_projectile,
+                    shoot_projectile,
                     move_projectile,
                     hit_enemy,
                     despawn_projectile,
