@@ -36,7 +36,7 @@ pub fn spawn(
             IsSprinting(false),
             Name::new("Player"),
             Player,
-            RigidBody::Fixed,
+            RigidBody::Dynamic,
             Speed(PLAYER_SPEED),
             Stamina::new(STAMINA),
         ))
