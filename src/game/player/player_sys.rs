@@ -1,3 +1,4 @@
+use bevy::math::Vec4Swizzles;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
@@ -11,32 +12,26 @@ use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
 
 /// Spawn Player
-pub fn spawn(
-    mut cmds: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    let half_size = PLAYER_SIZE / 2.0;
+pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     let player = cmds
         .spawn((
-            PbrBundle {
-                material: materials.add(Color::BLUE.into()),
-                mesh: meshes.add(Mesh::from(shape::Capsule {
-                    radius: half_size,
-                    depth: half_size,
+            SceneBundle {
+                scene: assets.load("models/Player.gltf#Scene0"),
+                transform: Transform {
+                    scale: Vec3::new(0.8, 0.8, 0.8),
+                    translation: Vec3::new(0.0, 0.5, 0.0),
                     ..default()
-                })),
-                transform: Transform::from_xyz(0.0, 0.25, 0.0),
+                },
                 ..default()
             },
-            Collider::cylinder(half_size, half_size),
+            // Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE),
             Damage::new(25.0),
             Hp::new(PLAYER_HP),
             Game,
             IsSprinting(false),
             Name::new("Player"),
             Player,
-            RigidBody::Dynamic,
+            // RigidBody::Dynamic,
             Speed(PLAYER_SPEED),
             Stamina::new(STAMINA),
         ))
@@ -128,7 +123,9 @@ pub fn keyboard_movement(
             sprinting.0 = true;
         }
 
-        direction.y = 0.0;
+        // let rotation_speed = 0.1; // adjust as needed
+        // trans.rotate(Quat::from_rotation_y(rotation_speed * time.delta_seconds()));
+
         trans.translation += speed.0 * sprint * direction * time.delta_seconds();
     }
 }
