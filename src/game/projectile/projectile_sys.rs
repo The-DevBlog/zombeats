@@ -5,7 +5,7 @@ use crate::{
         camera::camera_cmps::CustomCamera,
         enemy::enemy_cmps::Enemy,
         game_cmps::{Damage, Game},
-        player::player_cmps::Player,
+        player::player_cmps::{IsShooting, Player},
         world::MAP_SIZE,
     },
     gamepad::gamepad_rcs::MyGamepad,
@@ -26,7 +26,7 @@ pub fn shoot_projectile(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     my_gamepad: Option<Res<MyGamepad>>,
-    player_q: Query<&Transform, With<Player>>,
+    mut player_q: Query<(&mut Transform, &mut IsShooting), With<Player>>,
     cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
 ) {
     // return id of gamepad if one is connected
@@ -36,7 +36,7 @@ pub fn shoot_projectile(
         None
     };
 
-    if let Ok(player_trans) = player_q.get_single() {
+    if let Ok((mut player_trans, mut is_shooting)) = player_q.get_single_mut() {
         let cam_trans = cam_q.iter().next().unwrap();
 
         let right_trigger = if let Some(g) = gamepad {
@@ -47,6 +47,7 @@ pub fn shoot_projectile(
 
         if right_trigger || mouse.pressed(MouseButton::Left) {
             if fire_rate.0.finished() || fire_rate.0.percent_left() == 1.0 {
+                let direction = Vec3::new(cam_trans.back().x, 0.0, cam_trans.back().z);
                 let projectile = (
                     PbrBundle {
                         material: materials.add(StandardMaterial {
@@ -60,13 +61,14 @@ pub fn shoot_projectile(
                         transform: Transform::from_translation(player_trans.translation),
                         ..default()
                     },
-                    Projectile {
-                        direction: Vec3::new(cam_trans.back().x, 0.0, cam_trans.back().z),
-                    },
+                    Projectile { direction },
                     Game,
                 );
 
                 cmds.spawn(projectile);
+
+                // rotate player in direction he is shooting
+                player_trans.look_to(-direction, Vec3::Y);
 
                 let sound = assets.load("audio/shoot.ogg");
                 audio.play_with_settings(
@@ -76,11 +78,14 @@ pub fn shoot_projectile(
                         ..default()
                     },
                 );
+
+                is_shooting.0 = true;
             }
 
             fire_rate.0.tick(time.delta());
         } else {
             fire_rate.0.reset();
+            is_shooting.0 = false;
         }
     }
 }

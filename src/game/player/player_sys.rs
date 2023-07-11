@@ -25,6 +25,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
         Hp::new(PLAYER_HP),
         Game,
         IsSprinting(false),
+        IsShooting(false),
         Name::new("Player"),
         Player,
         RigidBody::Dynamic,
@@ -61,10 +62,19 @@ pub fn map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
 pub fn keyboard_movement(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
-    mut player_q: Query<(&mut Transform, &Speed, &mut IsSprinting, &Stamina), With<Player>>,
+    mut player_q: Query<
+        (
+            &mut Transform,
+            &Speed,
+            &mut IsSprinting,
+            &Stamina,
+            &IsShooting,
+        ),
+        With<Player>,
+    >,
     cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
 ) {
-    for (mut player_trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
+    for (mut player_trans, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut() {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -96,14 +106,14 @@ pub fn keyboard_movement(
         let mut sprint = 1.0;
         if keys.pressed(KeyCode::LShift) && stamina.value > 0.0 {
             sprint = SPRINT_SPEED;
-            sprinting.0 = true;
+            is_sprinting.0 = true;
         }
 
         direction.y = 0.0;
         player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
 
         // rotate player to face direction he is currently moving
-        if direction.length_squared() > 0.0 {
+        if direction.length_squared() > 0.0 && !is_shooting.0 {
             player_trans.look_to(direction, Vec3::Y);
         }
     }
