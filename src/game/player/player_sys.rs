@@ -1,7 +1,3 @@
-use bevy::math::Vec4Swizzles;
-use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
-
 use super::player_res::KillCount;
 use super::{player_cmps::*, *};
 use crate::game::camera::camera_cmps::CustomCamera;
@@ -10,51 +6,31 @@ use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 use crate::game::game_evs::GameOver;
 use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
+use bevy_rapier3d::prelude::*;
 
 /// Spawn Player
 pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
-    let player = cmds
-        .spawn((
-            SceneBundle {
-                scene: assets.load("models/Player.gltf#Scene0"),
-                transform: Transform {
-                    scale: Vec3::new(0.8, 0.8, 0.8),
-                    translation: Vec3::new(0.0, 0.5, 0.0),
-                    ..default()
-                },
+    cmds.spawn((
+        SceneBundle {
+            scene: assets.load("models/Player.gltf#Scene0"),
+            transform: Transform {
+                scale: Vec3::new(0.8, 0.8, 0.8),
+                translation: Vec3::new(0.0, 0.5, 0.0),
                 ..default()
             },
-            // Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE),
-            Damage::new(25.0),
-            Hp::new(PLAYER_HP),
-            Game,
-            IsSprinting(false),
-            Name::new("Player"),
-            Player,
-            // RigidBody::Dynamic,
-            Speed(PLAYER_SPEED),
-            Stamina::new(STAMINA),
-        ))
-        .id();
-
-    let translation = Vec3::new(0.0, 1.0, 2.0);
-    let radius = translation.length();
-    let camera = cmds
-        .spawn((
-            Camera3dBundle {
-                transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
-                ..default()
-            },
-            CustomCamera {
-                radius,
-                ..default()
-            },
-            Name::new("Camera"),
-        ))
-        .id();
-
-    // make camera have same transform as player
-    cmds.entity(player).push_children(&[camera]);
+            ..default()
+        },
+        Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE),
+        Damage::new(25.0),
+        Hp::new(PLAYER_HP),
+        Game,
+        IsSprinting(false),
+        Name::new("Player"),
+        Player,
+        RigidBody::Dynamic,
+        Speed(PLAYER_SPEED),
+        Stamina::new(STAMINA),
+    ));
 }
 
 /// Keep player within the map bounds
@@ -88,7 +64,7 @@ pub fn keyboard_movement(
     mut player_q: Query<(&mut Transform, &Speed, &mut IsSprinting, &Stamina), With<Player>>,
     cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
 ) {
-    for (mut trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
+    for (mut player_trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -123,10 +99,13 @@ pub fn keyboard_movement(
             sprinting.0 = true;
         }
 
-        // let rotation_speed = 0.1; // adjust as needed
-        // trans.rotate(Quat::from_rotation_y(rotation_speed * time.delta_seconds()));
+        direction.y = 0.0;
+        player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
 
-        trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+        // rotate player to face direction he is currently moving
+        if direction.length_squared() > 0.0 {
+            player_trans.look_to(direction, Vec3::Y);
+        }
     }
 }
 
