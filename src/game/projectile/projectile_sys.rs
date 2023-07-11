@@ -37,7 +37,6 @@ pub fn shoot_projectile(
     };
 
     if let Ok(player_trans) = player_q.get_single() {
-        // Get the camera's forward direction vector on the xz plane
         let cam_trans = cam_q.iter().next().unwrap();
 
         let right_trigger = if let Some(g) = gamepad {
@@ -62,7 +61,7 @@ pub fn shoot_projectile(
                         ..default()
                     },
                     Projectile {
-                        direction: Vec3::new(cam_trans.translation.x, 0.0, cam_trans.translation.z),
+                        direction: Vec3::new(cam_trans.back().x, 0.0, cam_trans.back().z),
                     },
                     Game,
                 );

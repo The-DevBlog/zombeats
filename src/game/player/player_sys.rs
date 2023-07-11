@@ -139,7 +139,7 @@ pub fn gamepad_movement(
         left_joystick = Vec2::new(x, y);
     }
 
-    for (mut trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
+    for (mut player_trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -168,7 +168,12 @@ pub fn gamepad_movement(
         }
 
         direction.y = 0.0;
-        trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+        player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+
+        // rotate player to face direction he is currently moving
+        if direction.length_squared() > 0.0 {
+            player_trans.look_to(direction, Vec3::Y);
+        }
     }
 }
 
