@@ -13,6 +13,7 @@ pub struct MusicPlugin;
 impl Plugin for MusicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MusicController>()
-            .add_system(setup_music.in_schedule(OnEnter(AppState::Game)));
+            // .add_system(setup_music.in_schedule(OnEnter(AppState::Game)))
+            ;
     }
 }

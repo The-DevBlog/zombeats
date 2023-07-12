@@ -32,7 +32,7 @@ impl Plugin for EnemyPlugin {
                 (
                     decrease_hp,
                     despawn,
-                    spawn,
+                    // spawn,
                     tracking,
                     attack,
                     increase_hp_over_time,

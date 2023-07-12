@@ -1,99 +1,52 @@
-use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
-
 use super::player_res::KillCount;
 use super::{player_cmps::*, *};
 use crate::game::camera::camera_cmps::CustomCamera;
 use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 use crate::game::game_evs::GameOver;
-use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
+use bevy_rapier3d::prelude::*;
 
-/// Spawn Player
-pub fn spawn(
-    mut cmds: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    let half_size = PLAYER_SIZE / 2.0;
-    let player = cmds
-        .spawn((
-            PbrBundle {
-                material: materials.add(Color::BLUE.into()),
-                mesh: meshes.add(Mesh::from(shape::Capsule {
-                    radius: half_size,
-                    depth: half_size,
-                    ..default()
-                })),
-                transform: Transform::from_xyz(0.0, 0.25, 0.0),
+pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
+    cmds.spawn((
+        SceneBundle {
+            scene: assets.load("models/Player.gltf#Scene0"),
+            transform: Transform {
+                translation: Vec3::new(0.0, 0.25, 0.0),
                 ..default()
             },
-            Collider::cylinder(half_size, half_size),
-            Damage::new(25.0),
-            Hp::new(PLAYER_HP),
-            Game,
-            IsSprinting(false),
-            Name::new("Player"),
-            Player,
-            RigidBody::Dynamic,
-            Speed(PLAYER_SPEED),
-            Stamina::new(STAMINA),
-        ))
-        .id();
-
-    let translation = Vec3::new(0.0, 1.0, 2.0);
-    let radius = translation.length();
-    let camera = cmds
-        .spawn((
-            Camera3dBundle {
-                transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
-                ..default()
-            },
-            CustomCamera {
-                radius,
-                ..default()
-            },
-            Name::new("Camera"),
-        ))
-        .id();
-
-    // make camera have same transform as player
-    cmds.entity(player).push_children(&[camera]);
-}
-
-/// Keep player within the map bounds
-pub fn map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
-    if let Ok(mut trans) = player_q.get_single_mut() {
-        // +Z bounds
-        if trans.translation.z + PLAYER_SIZE / 2.0 > MAP_SIZE / 2.0 {
-            trans.translation.z = MAP_SIZE / 2.0 - PLAYER_SIZE / 2.0;
-        }
-
-        // -Z bounds
-        if trans.translation.z - PLAYER_SIZE / 2.0 < -MAP_SIZE / 2.0 {
-            trans.translation.z = -MAP_SIZE / 2.0 + PLAYER_SIZE / 2.0;
-        }
-
-        // +X bounds
-        if trans.translation.x + PLAYER_SIZE / 2.0 > MAP_SIZE / 2.0 {
-            trans.translation.x = MAP_SIZE / 2.0 - PLAYER_SIZE / 2.0;
-        }
-
-        // -X bounds
-        if trans.translation.x - PLAYER_SIZE / 2.0 < -MAP_SIZE / 2.0 {
-            trans.translation.x = -MAP_SIZE / 2.0 + PLAYER_SIZE / 2.0;
-        }
-    }
+            ..default()
+        },
+        Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE / 2.0),
+        Damage::new(25.0),
+        Hp::new(PLAYER_HP),
+        Game,
+        IsSprinting(false),
+        IsShooting(false),
+        Name::new("Player"),
+        Player,
+        RigidBody::Dynamic,
+        Speed(PLAYER_SPEED),
+        Stamina::new(STAMINA),
+    ));
 }
 
 pub fn keyboard_movement(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
-    mut player_q: Query<(&mut Transform, &Speed, &mut IsSprinting, &Stamina), With<Player>>,
+    mut player_q: Query<
+        (
+            &mut Transform,
+            &Speed,
+            &mut IsSprinting,
+            &Stamina,
+            &IsShooting,
+        ),
+        With<Player>,
+    >,
     cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
 ) {
-    for (mut trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
+    for (mut player_trans, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut() {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -125,11 +78,16 @@ pub fn keyboard_movement(
         let mut sprint = 1.0;
         if keys.pressed(KeyCode::LShift) && stamina.value > 0.0 {
             sprint = SPRINT_SPEED;
-            sprinting.0 = true;
+            is_sprinting.0 = true;
         }
 
         direction.y = 0.0;
-        trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+        player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+
+        // rotate player to face direction he is currently moving
+        if direction.length_squared() > 0.0 && !is_shooting.0 {
+            player_trans.look_to(direction, Vec3::Y);
+        }
     }
 }
 
@@ -163,7 +121,7 @@ pub fn gamepad_movement(
         left_joystick = Vec2::new(x, y);
     }
 
-    for (mut trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
+    for (mut player_trans, speed, mut sprinting, stamina) in player_q.iter_mut() {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -192,7 +150,12 @@ pub fn gamepad_movement(
         }
 
         direction.y = 0.0;
-        trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+        player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+
+        // rotate player to face direction he is currently moving
+        if direction.length_squared() > 0.0 {
+            player_trans.look_to(direction, Vec3::Y);
+        }
     }
 }
 

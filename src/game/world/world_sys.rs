@@ -1,5 +1,10 @@
 use bevy::{prelude::*, render::render_resource::Face};
-use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::{
+    prelude::*,
+    rapier::prelude::{
+        ColliderPosition, RigidBodyBuilder, RigidBodyHandle, RigidBodySet, RigidBodyType,
+    },
+};
 use rand::Rng;
 use std::f32::consts::PI;
 
@@ -87,13 +92,12 @@ pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
                 SceneBundle {
                     scene: asset_server.load("models/Table.gltf#Scene0"),
                     transform: Transform {
-                        translation: Vec3::new(x, 0.0, z),
-                        scale: Vec3::new(1.5, 1.5, 1.5),
+                        translation: Vec3::new(x, 0.35, z),
                         ..default()
                     },
                     ..default()
                 },
-                Collider::cylinder(0.4, 0.4),
+                Collider::cylinder(0.32, 0.7),
                 Game,
                 Name::new("Table"),
             )
@@ -104,13 +108,12 @@ pub fn spawn_tables(mut cmds: Commands, assets: Res<AssetServer>) {
             SceneBundle {
                 scene: asset_server.load("models/Chair.gltf#Scene0"),
                 transform: Transform {
-                    scale: Vec3::new(0.1, 0.08, 0.1),
                     translation: Vec3::new(x, 0.0, z),
                     ..default()
                 },
                 ..default()
             },
-            Collider::cuboid(1.0, 3.0, 1.0),
+            Collider::cuboid(0.15, 0.15, 0.15),
             Name::new("Chair"),
         )
     };
@@ -157,10 +160,10 @@ pub fn spawn_bar_table(mut cmds: Commands, assets: Res<AssetServer>) {
     let bar_table = (
         SceneBundle {
             scene: assets.load("models/BarTable.gltf#Scene0"),
-            transform: Transform::from_xyz(8.8, 0.0, 7.0),
+            transform: Transform::from_xyz(8.8, 0.28, 7.0),
             ..default()
         },
-        Collider::cuboid(0.5, 0.5, 3.1),
+        Collider::cuboid(0.5, 0.25, 3.1),
         Game,
         Name::new("Bar Table"),
     );

@@ -1,14 +1,47 @@
 use std::f32::consts::PI;
 
+use super::camera_cmps::CustomCamera;
+use crate::{
+    game::{game_cmps::Game, player::player_cmps::Player},
+    gamepad::gamepad_rcs::MyGamepad,
+};
 use bevy::{
     input::mouse::{MouseMotion, MouseWheel},
     prelude::*,
     window::PrimaryWindow,
 };
 
-use crate::gamepad::gamepad_rcs::MyGamepad;
+pub fn spawn(mut cmds: Commands) {
+    let translation = Vec3::new(0.0, 1.0, 2.0);
+    let radius = translation.length();
+    cmds.spawn((
+        Camera3dBundle {
+            transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
+        CustomCamera {
+            radius,
+            ..default()
+        },
+        Name::new("Camera"),
+        Game,
+    ));
+}
 
-use super::camera_cmps::CustomCamera;
+pub fn sync_player_camera(
+    player: Query<&Transform, With<Player>>,
+    mut camera: Query<(&mut CustomCamera, &mut Transform), Without<Player>>,
+) {
+    let Ok(player) = player.get_single() else { return };
+    let Ok((mut camera, mut camera_transform)) = camera.get_single_mut() else { return };
+
+    let delta = player.translation - camera.focus;
+
+    if delta != Vec3::ZERO {
+        camera.focus = player.translation;
+        camera_transform.translation += delta;
+    }
+}
 
 // heavily referenced https://bevy-cheatbook.github.io/cookbook/pan-orbit-camera.html
 pub fn orbit_mouse(
