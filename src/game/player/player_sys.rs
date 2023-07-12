@@ -4,23 +4,20 @@ use crate::game::camera::camera_cmps::CustomCamera;
 use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 use crate::game::game_evs::GameOver;
-use crate::game::world::MAP_SIZE;
 use crate::gamepad::gamepad_rcs::MyGamepad;
 use bevy_rapier3d::prelude::*;
 
-/// Spawn Player
 pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     cmds.spawn((
         SceneBundle {
             scene: assets.load("models/Player.gltf#Scene0"),
             transform: Transform {
-                scale: Vec3::new(0.8, 0.8, 0.8),
-                translation: Vec3::new(0.0, 0.5, 0.0),
+                translation: Vec3::new(0.0, 0.25, 0.0),
                 ..default()
             },
             ..default()
         },
-        Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE),
+        Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE / 2.0),
         Damage::new(25.0),
         Hp::new(PLAYER_HP),
         Game,
@@ -32,31 +29,6 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
         Speed(PLAYER_SPEED),
         Stamina::new(STAMINA),
     ));
-}
-
-/// Keep player within the map bounds
-pub fn map_bounds(mut player_q: Query<&mut Transform, With<Player>>) {
-    if let Ok(mut trans) = player_q.get_single_mut() {
-        // +Z bounds
-        if trans.translation.z + PLAYER_SIZE / 2.0 > MAP_SIZE / 2.0 {
-            trans.translation.z = MAP_SIZE / 2.0 - PLAYER_SIZE / 2.0;
-        }
-
-        // -Z bounds
-        if trans.translation.z - PLAYER_SIZE / 2.0 < -MAP_SIZE / 2.0 {
-            trans.translation.z = -MAP_SIZE / 2.0 + PLAYER_SIZE / 2.0;
-        }
-
-        // +X bounds
-        if trans.translation.x + PLAYER_SIZE / 2.0 > MAP_SIZE / 2.0 {
-            trans.translation.x = MAP_SIZE / 2.0 - PLAYER_SIZE / 2.0;
-        }
-
-        // -X bounds
-        if trans.translation.x - PLAYER_SIZE / 2.0 < -MAP_SIZE / 2.0 {
-            trans.translation.x = -MAP_SIZE / 2.0 + PLAYER_SIZE / 2.0;
-        }
-    }
 }
 
 pub fn keyboard_movement(

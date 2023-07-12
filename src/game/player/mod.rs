@@ -28,7 +28,6 @@ impl Plugin for PlayerPlugin {
                     keyboard_movement,
                     gamepad_movement,
                     update_stamina,
-                    map_bounds,
                     increase_killcount,
                     death,
                 )
