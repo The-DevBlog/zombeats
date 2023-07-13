@@ -2,10 +2,9 @@ use super::player_res::KillCount;
 use super::{player_cmps::*, *};
 use crate::game::camera::camera_cmps::CustomCamera;
 use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
-use crate::game::game_cmps::{Damage, Game, Hp, Speed};
+use crate::game::game_cmps::{Hp, Speed};
 use crate::game::game_evs::GameOver;
 use crate::gamepad::gamepad_rcs::MyGamepad;
-use bevy_rapier3d::prelude::*;
 
 pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
     cmds.spawn((
@@ -17,17 +16,7 @@ pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
             },
             ..default()
         },
-        Collider::cylinder(PLAYER_SIZE, PLAYER_SIZE / 2.0),
-        Damage::new(25.0),
-        Hp::new(PLAYER_HP),
-        Game,
-        IsSprinting(false),
-        IsShooting(false),
-        Name::new("Player"),
-        Player,
-        RigidBody::Dynamic,
-        Speed(PLAYER_SPEED),
-        Stamina::new(STAMINA),
+        PlayerBundle::default(),
     ));
 }
 

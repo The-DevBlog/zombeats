@@ -1,10 +1,5 @@
 use bevy::{prelude::*, render::render_resource::Face};
-use bevy_rapier3d::{
-    prelude::*,
-    rapier::prelude::{
-        ColliderPosition, RigidBodyBuilder, RigidBodyHandle, RigidBodySet, RigidBodyType,
-    },
-};
+use bevy_rapier3d::prelude::*;
 use rand::Rng;
 use std::f32::consts::PI;
 

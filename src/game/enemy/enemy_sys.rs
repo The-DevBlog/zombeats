@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::prelude::{Collider, RigidBody};
 use rand::Rng;
 
 use crate::game::{
@@ -53,15 +53,8 @@ pub fn spawn(
                 transform: Transform::from_xyz(x, 0.5, z),
                 ..default()
             },
-            AttackRate::default(),
-            Collider::cylinder(size_half, size_half),
-            Damage::new(10.0),
-            Enemy,
-            Game,
+            EnemyBundle::default(),
             Hp::new(enemy_hp.0),
-            Name::new("Enemy"),
-            RigidBody::Dynamic,
-            Speed(ENEMY_SPEED),
         ));
     }
 }
