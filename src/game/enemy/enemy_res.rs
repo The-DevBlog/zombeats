@@ -23,7 +23,7 @@ impl Default for EnemySpawnTimer {
     }
 }
 
-#[derive(Resource)]
+#[derive(Resource, Component)]
 pub struct EnemyHp(pub f32);
 
 impl Default for EnemyHp {

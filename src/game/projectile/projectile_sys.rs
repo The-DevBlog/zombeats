@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     game::{
         camera::camera_cmps::CustomCamera,
-        enemy::enemy_cmps::Enemy,
+        enemy::{enemy_cmps::Enemy, ENEMY_SIZE},
         game_cmps::{Damage, Game},
         player::player_cmps::{IsShooting, Player},
         world::MAP_SIZE,
@@ -118,7 +118,7 @@ pub fn hit_enemy(
             let dmg = player_q.get_single().unwrap();
 
             // reduce enemy hp and despawn projectile
-            if distance < 0.25 {
+            if distance < ENEMY_SIZE {
                 // fire hit event
                 hit_evw.send(HitEv {
                     dmg: dmg.value,
