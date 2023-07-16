@@ -36,17 +36,22 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<GameTime>()
             .add_event::<GameOver>()
-            .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-            .add_plugin(RapierDebugRenderPlugin::default())
-            .add_plugin(MusicPlugin)
-            .add_plugin(WorldPlugin)
-            .add_plugin(PowerUpsPlugin)
-            .add_plugin(CameraPlugin)
-            .add_plugin(PlayerPlugin)
-            .add_plugin(ProjectilePlugin)
-            .add_plugin(EnemyPlugin)
-            .add_plugin(HudPlugin)
-            .add_systems((exit_game, hide_cursor, game_over).in_set(OnUpdate(AppState::Game)))
-            .add_systems((despawn_game, show_cursor).in_schedule(OnExit(AppState::Game)));
+            .add_plugins((
+                CameraPlugin,
+                EnemyPlugin,
+                HudPlugin,
+                MusicPlugin,
+                PowerUpsPlugin,
+                PlayerPlugin,
+                ProjectilePlugin,
+                RapierPhysicsPlugin::<NoUserData>::default(),
+                RapierDebugRenderPlugin::default(),
+                WorldPlugin,
+            ))
+            .add_systems(
+                Update,
+                (exit_game, hide_cursor, game_over).run_if(in_state(AppState::Game)),
+            )
+            .add_systems(OnExit(AppState::Game), (despawn_game, show_cursor));
     }
 }

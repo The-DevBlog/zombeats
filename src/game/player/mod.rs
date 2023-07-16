@@ -9,7 +9,7 @@ use player_res::*;
 use player_sys::*;
 
 pub const PLAYER_SPEED: f32 = 2.5;
-pub const PLAYER_HP: f32 = 10000.0;
+pub const PLAYER_HP: f32 = 100.0;
 pub const STAMINA: f32 = 100.0;
 pub const SPRINT_SPEED: f32 = 2.0;
 pub const PLAYER_SIZE: f32 = 0.5;
@@ -21,8 +21,9 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<KillCount>()
-            .add_systems((spawn, reset_killcount).in_schedule(OnEnter(AppState::Game)))
+            .add_systems(OnEnter(AppState::Game), (spawn, reset_killcount))
             .add_systems(
+                Update,
                 (
                     decrease_hp,
                     keyboard_movement,
@@ -31,7 +32,7 @@ impl Plugin for PlayerPlugin {
                     increase_killcount,
                     death,
                 )
-                    .in_set(OnUpdate(AppState::Game)),
+                    .run_if(in_state(AppState::Game)),
             );
     }
 }

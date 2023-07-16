@@ -27,8 +27,9 @@ impl Plugin for EnemyPlugin {
             .init_resource::<EnemyHp>()
             .add_event::<HitPlayerEv>()
             .add_event::<EnemyDeathEv>()
-            .add_system(reset_hp.in_schedule(OnEnter(AppState::Game)))
+            .add_systems(OnEnter(AppState::Game), reset_hp)
             .add_systems(
+                Update,
                 (
                     decrease_hp,
                     despawn,
@@ -38,7 +39,7 @@ impl Plugin for EnemyPlugin {
                     increase_hp_over_time,
                     play_hit_noise,
                 )
-                    .in_set(OnUpdate(AppState::Game)),
+                    .run_if(in_state(AppState::Game)),
             );
     }
 }

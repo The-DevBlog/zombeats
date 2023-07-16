@@ -21,13 +21,14 @@ impl Plugin for ProjectilePlugin {
             .add_event::<HitEv>()
             .init_resource::<FireRate>()
             .add_systems(
+                Update,
                 (
                     shoot_projectile,
                     move_projectile,
                     hit_enemy,
                     despawn_projectile,
                 )
-                    .in_set(OnUpdate(AppState::Game)),
+                    .run_if(in_state(AppState::Game)),
             );
     }
 }

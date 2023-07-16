@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use std::time::Duration;
+
+use bevy::{asset::ChangeWatcher, prelude::*};
 
 mod game;
 pub mod game_over;
@@ -15,14 +17,17 @@ fn main() {
     App::new()
         .add_state::<AppState>()
         .add_plugins(DefaultPlugins.set(AssetPlugin {
-            watch_for_changes: true,
+            // You can now give it a configurable delay. This is a safe default.
+            watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
             ..default()
         }))
-        .add_plugin(GamepadPlugin)
-        .add_plugin(MainMenuPlugin)
-        .add_plugin(WorldInspectorPlugin::new())
-        .add_plugin(GamePlugin)
-        .add_plugin(GameOverPlugin)
+        .add_plugins((
+            GamepadPlugin,
+            MainMenuPlugin,
+            // WorldInspectorPlugin::new(),
+            GamePlugin,
+            GameOverPlugin,
+        ))
         .run();
 }
 

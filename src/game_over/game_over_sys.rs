@@ -6,7 +6,7 @@ use crate::{game::game_res::GameTime, gamepad::gamepad_rcs::MyGamepad, AppState}
 use super::game_over_cmps::*;
 use super::*;
 
-pub fn spawn_menu(
+pub fn spawn_game_over_menu(
     mut cmds: Commands,
     assets: Res<AssetServer>,
     game_time: Res<GameTime>,
@@ -19,7 +19,8 @@ pub fn spawn_menu(
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::Center,
-                size: Size::all(Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..default()
             },
             ..default()
@@ -61,7 +62,8 @@ pub fn spawn_menu(
             style: Style {
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
-                size: Size::new(Val::Px(230.0), Val::Px(75.0)),
+                width: Val::Px(230.0),
+                height: Val::Px(75.0),
                 margin: UiRect::top(Val::Px(50.0)),
                 ..default()
             },
@@ -88,7 +90,8 @@ pub fn spawn_menu(
         ImageBundle {
             image: assets.load("imgs/y_button.png").into(),
             style: Style {
-                size: Size::all(Val::Px(35.0)),
+                width: Val::Px(35.0),
+                height: Val::Px(35.0),
                 ..default()
             },
             ..default()
@@ -117,7 +120,7 @@ pub fn spawn_menu(
 
 pub fn select_play_again_gamepad(
     btns: Res<Input<GamepadButton>>,
-    cur_app_state: Res<State<AppState>>,
+    cur_app_state_res: Res<State<AppState>>,
     mut next_app_state: ResMut<NextState<AppState>>,
     my_gamepad: Option<Res<MyGamepad>>,
 ) {
@@ -125,8 +128,10 @@ pub fn select_play_again_gamepad(
         .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::North)))
         .unwrap_or(false);
 
+    let current_state = cur_app_state_res.get();
+
     if gamepad_input {
-        if cur_app_state.0 != AppState::Game {
+        if current_state != &AppState::Game {
             next_app_state.set(AppState::Game);
         }
     }
@@ -141,7 +146,7 @@ pub fn select_play_again_mouse(
 ) {
     for (interaction, mut background_clr) in &mut interact_q {
         match *interaction {
-            Interaction::Clicked => next_app_state.set(AppState::Game),
+            Interaction::Pressed => next_app_state.set(AppState::Game),
             Interaction::Hovered => *background_clr = PLAY_AGAIN_BTN_COLOR_HOVER.into(),
             Interaction::None => *background_clr = PLAY_AGAIN_BTN_COLOR.into(),
         }

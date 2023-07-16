@@ -1,9 +1,8 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::{Collider, RigidBody};
 use rand::Rng;
 
 use crate::game::{
-    game_cmps::{Damage, Game, Hp, Speed},
+    game_cmps::{Damage, Hp, Speed},
     player::player_cmps::Player,
     projectile::projectile_evs::HitEv,
     world::MAP_SIZE,
@@ -76,9 +75,9 @@ pub fn tracking(
 
 /// Fire Hit Player Event when enemy collides with player
 pub fn attack(
+    mut cmds: Commands,
     time: Res<Time>,
     assets: Res<AssetServer>,
-    audio: Res<Audio>,
     mut hit_player_ev: EventWriter<HitPlayerEv>,
     mut enemy_q: Query<(&mut Transform, &mut AttackRate, &Damage), With<Enemy>>,
     mut player: Query<&Transform, (With<Player>, Without<Enemy>)>,
@@ -91,10 +90,12 @@ pub fn attack(
                 if attack_rate.0.percent_left() == 1.0 {
                     // fire hit player event
                     hit_player_ev.send(HitPlayerEv(enemy_dmg.value));
-
-                    let sound = assets.load(r"audio\hurt.ogg");
-                    audio.play(sound);
                     attack_rate.0.tick(time.delta());
+
+                    cmds.spawn(AudioBundle {
+                        source: assets.load(r"audio\hurt.ogg"),
+                        ..default()
+                    });
                 }
             }
 
@@ -131,15 +132,17 @@ pub fn decrease_hp(
 
 /// Play enemy hit noise when struck by projectile
 pub fn play_hit_noise(
-    audio: Res<Audio>,
+    mut cmds: Commands,
     assets: Res<AssetServer>,
     mut hit_evr: EventReader<HitEv>,
 ) {
     for _ev in hit_evr.iter() {
         let num = rand::thread_rng().gen_range(0..=4);
         let file = format!(r"audio\enemy\hurt_{}.ogg", num);
-        let sound = assets.load(file);
-        audio.play(sound);
+        cmds.spawn(AudioBundle {
+            source: assets.load(file),
+            ..default()
+        });
     }
 }
 
