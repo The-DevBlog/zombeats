@@ -22,6 +22,7 @@ impl Plugin for PowerUpsPlugin {
         app.init_resource::<PowerUpSpawnTime>()
             .init_resource::<DamageBoostDuration>()
             .add_systems(
+                Update,
                 (
                     spawn_powerups,
                     collect_stamina_powerup,
@@ -31,8 +32,8 @@ impl Plugin for PowerUpsPlugin {
                     despawn_powerup_display,
                     update_dmg_powerup_duration_display,
                 )
-                    .in_set(OnUpdate(AppState::Game)),
+                    .run_if(in_state(AppState::Game)),
             )
-            .add_system(spawn_dmg_powerup_duration_display.in_schedule(OnEnter(AppState::Game)));
+            .add_systems(OnEnter(AppState::Game), spawn_dmg_powerup_duration_display);
     }
 }

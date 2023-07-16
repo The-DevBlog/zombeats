@@ -19,12 +19,14 @@ pub fn spawn_kill_count(mut cmds: Commands, assets: Res<AssetServer>) {
         ),
         style: Style {
             position_type: PositionType::Absolute,
-            position: UiRect::new(
-                Val::Percent(1.2),
-                Val::Undefined,
-                Val::Percent(7.5),
-                Val::Undefined,
-            ),
+            left: Val::Percent(1.2),
+            top: Val::Percent(7.5),
+            // position: UiRect::new(
+            //     Val::Percent(1.2),
+            //     Val::Undefined,
+            //     Val::Percent(7.5),
+            //     Val::Undefined,
+            // ),
             ..default()
         },
         ..default()
@@ -43,18 +45,23 @@ pub fn spawn_health_bar(mut cmds: Commands, assets: Res<AssetServer>) {
     let container = create_container(
         Color::BLACK,
         UiRect::left(Val::Percent(1.0)),
-        Size::new(Val::Px(127.5), Val::Px(42.5)),
+        // Size::new(Val::Px(127.5), Val::Px(42.5)),
+        Val::Px(127.5),
+        Val::Px(42.5),
     );
 
     let fill = create_container(
         Color::RED,
         UiRect::new(
             Val::Percent(1.0),
-            Val::Undefined,
+            Val::Auto,
+            // Val::Undefined,
             Val::Percent(3.0),
-            Val::Undefined,
+            Val::Auto,
+            // Val::Undefined,
         ),
-        Size::new(Val::Px(125.0), Val::Px(40.0)),
+        Val::Px(125.0),
+        Val::Px(40.0), // Size::new(Val::Px(125.0), Val::Px(40.0)),
     );
 
     let txt = create_txt(&assets);
@@ -70,18 +77,21 @@ pub fn spawn_stamina_bar(mut cmds: Commands, assets: Res<AssetServer>) {
     let container = create_container(
         Color::BLACK,
         UiRect::right(Val::Percent(0.5)),
-        Size::new(Val::Px(127.5), Val::Px(42.5)),
+        Val::Px(127.5),
+        Val::Px(42.5), // Size::new(Val::Px(127.5), Val::Px(42.5)),
     );
 
     let fill = create_container(
         Color::DARK_GREEN,
         UiRect::new(
-            Val::Undefined,
+            // Val::Undefined,
+            Val::Auto,
             Val::Percent(1.0),
             Val::Percent(3.0),
-            Val::Undefined,
+            Val::Auto, // Val::Undefined,
         ),
-        Size::new(Val::Px(125.0), Val::Px(40.0)),
+        Val::Px(125.0),
+        Val::Px(40.0), // Size::new(Val::Px(125.0), Val::Px(40.0)),
     );
 
     let txt = create_txt(&assets);
@@ -126,7 +136,8 @@ pub fn spawn_time_display(mut cmds: Commands, assets: Res<AssetServer>) {
             style: Style {
                 align_items: AlignItems::Center,
                 position_type: PositionType::Absolute,
-                position: UiRect::left(Val::Percent(46.5)),
+                left: Val::Percent(46.5),
+                // position: UiRect::left(Val::Percent(46.5)),
                 ..default()
             },
             ..default()
@@ -183,7 +194,7 @@ fn create_txt(assets: &Res<AssetServer>) -> TextBundle {
     )
 }
 
-fn create_container(color: Color, position: UiRect, size: Size) -> NodeBundle {
+fn create_container(color: Color, position: UiRect, width: Val, height: Val) -> NodeBundle {
     NodeBundle {
         background_color: color.into(),
         style: Style {
@@ -191,9 +202,13 @@ fn create_container(color: Color, position: UiRect, size: Size) -> NodeBundle {
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             padding: UiRect::all(Val::Px(20.0)),
-            position,
+            left: position.left,
+            right: position.right,
+            top: position.top,
+            bottom: position.bottom,
             position_type: PositionType::Absolute,
-            size,
+            width,
+            height,
             ..default()
         },
         ..default()

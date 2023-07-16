@@ -1,21 +1,24 @@
 use bevy::prelude::*;
 
-use super::music_res::MusicController;
+use super::music_cmps::Music;
 
-pub fn setup_music(
-    mut cmds: Commands,
-    assets: Res<AssetServer>,
-    audio: Res<Audio>,
-    audio_sinks: Res<Assets<AudioSink>>,
-    music_res: Res<MusicController>,
-) {
-    // reset music if it is already playing
-    if let Some(sink) = audio_sinks.get(&music_res.0) {
+pub fn play_music(mut cmds: Commands, assets: Res<AssetServer>) {
+    cmds.spawn((
+        AudioBundle {
+            source: assets.load(r"audio\music\tvs_story.ogg"),
+            ..default()
+        },
+        Music,
+        Name::new("Music"),
+    ));
+}
+
+pub fn stop_music(mut cmds: Commands, music_q: Query<(&AudioSink, Entity), With<Music>>) {
+    for (sink, ent) in music_q.iter() {
+        // stop any existing music entities
         sink.stop();
+
+        // despawn existing music entities
+        cmds.entity(ent).despawn_recursive();
     }
-
-    let music = assets.load(r"audio\music\tvs_story.ogg");
-    let handle = audio_sinks.get_handle(audio.play_with_settings(music, PlaybackSettings::LOOP));
-
-    cmds.insert_resource(MusicController(handle));
 }

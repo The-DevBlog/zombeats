@@ -7,14 +7,15 @@ use super::{
     PLAY_BTN_COLOR, PLAY_BTN_COLOR_HOVER,
 };
 
-pub fn spawn_menu(mut cmds: Commands, assets: Res<AssetServer>) {
+pub fn spawn_main_menu(mut cmds: Commands, assets: Res<AssetServer>) {
     let img_container = (
         ImageBundle {
             image: assets.load("imgs/main_menu_background.png").into(),
             style: Style {
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
-                size: Size::all(Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..default()
             },
             ..default()
@@ -29,8 +30,9 @@ pub fn spawn_menu(mut cmds: Commands, assets: Res<AssetServer>) {
             style: Style {
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
-                position: UiRect::top(Val::Percent(30.0)),
-                size: Size::new(Val::Px(150.0), Val::Px(75.0)),
+                top: Val::Percent(30.0),
+                width: Val::Px(150.0),
+                height: Val::Px(75.0),
                 ..default()
             },
             ..default()
@@ -56,7 +58,8 @@ pub fn spawn_menu(mut cmds: Commands, assets: Res<AssetServer>) {
         ImageBundle {
             image: assets.load("imgs/a_button.png").into(),
             style: Style {
-                size: Size::all(Val::Px(35.0)),
+                width: Val::Px(35.0),
+                height: Val::Px(35.0),
                 ..default()
             },
             ..default()
@@ -72,12 +75,13 @@ pub fn spawn_menu(mut cmds: Commands, assets: Res<AssetServer>) {
                     color: Color::RED.into(),
                     font: assets.load("fonts/PermanentMarker-Regular.ttf"),
                     font_size: 125.0,
+                    ..default()
                 },
             ),
             style: Style {
                 align_self: AlignSelf::Start,
                 position_type: PositionType::Absolute,
-                position: UiRect::top(Val::Percent(5.0)),
+                top: Val::Percent(5.0),
                 ..default()
             },
             ..default()
@@ -111,7 +115,7 @@ pub fn despawn_menu(
 
 pub fn select_play_gamepad(
     btns: Res<Input<GamepadButton>>,
-    cur_app_state: Res<State<AppState>>,
+    cur_app_state_res: Res<State<AppState>>,
     mut next_app_state: ResMut<NextState<AppState>>,
     my_gamepad: Option<Res<MyGamepad>>,
 ) {
@@ -119,8 +123,10 @@ pub fn select_play_gamepad(
         .map(|gp| btns.just_pressed(GamepadButton::new(gp.gamepad, GamepadButtonType::South)))
         .unwrap_or(false);
 
+    let current_state = cur_app_state_res.get();
+
     if gamepad_input {
-        if cur_app_state.0 != AppState::Game {
+        if current_state != &AppState::Game {
             next_app_state.set(AppState::Game);
         }
     }
@@ -135,7 +141,7 @@ pub fn select_play_mouse(
 ) {
     for (interaction, mut background_clr) in &mut interact_q {
         match *interaction {
-            Interaction::Clicked => next_app_state.set(AppState::Game),
+            Interaction::Pressed => next_app_state.set(AppState::Game),
             Interaction::Hovered => *background_clr = PLAY_BTN_COLOR_HOVER.into(),
             Interaction::None => *background_clr = PLAY_BTN_COLOR.into(),
         }

@@ -65,7 +65,7 @@ pub fn keyboard_movement(
 
         // sprint
         let mut sprint = 1.0;
-        if keys.pressed(KeyCode::LShift) && stamina.value > 0.0 {
+        if keys.pressed(KeyCode::ShiftLeft) && stamina.value > 0.0 {
             sprint = SPRINT_SPEED;
             is_sprinting.0 = true;
         }

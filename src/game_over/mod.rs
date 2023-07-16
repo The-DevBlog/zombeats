@@ -14,11 +14,12 @@ pub struct GameOverPlugin;
 
 impl Plugin for GameOverPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_menu.in_schedule(OnEnter(AppState::GameOver)))
+        app.add_systems(OnEnter(AppState::GameOver), spawn_game_over_menu)
             .add_systems(
+                Update,
                 (select_play_again_gamepad, select_play_again_mouse)
-                    .in_set(OnUpdate(AppState::GameOver)),
+                    .run_if(in_state(AppState::GameOver)),
             )
-            .add_system(despawn_game_over_menu.in_schedule(OnExit(AppState::GameOver)));
+            .add_systems(OnExit(AppState::GameOver), despawn_game_over_menu);
     }
 }

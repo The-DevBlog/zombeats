@@ -9,6 +9,6 @@ pub struct GamepadPlugin;
 
 impl Plugin for GamepadPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(connections);
+        app.add_systems(Update, connections);
     }
 }

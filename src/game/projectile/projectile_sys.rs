@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::{
+    audio::{Volume, VolumeLevel},
+    prelude::*,
+};
 
 use crate::{
     game::{
@@ -20,7 +23,6 @@ pub fn shoot_projectile(
     time: Res<Time>,
     btns: Res<Input<GamepadButton>>,
     mouse: Res<Input<MouseButton>>,
-    audio: Res<Audio>,
     assets: Res<AssetServer>,
     mut fire_rate: ResMut<FireRate>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -70,14 +72,14 @@ pub fn shoot_projectile(
                 // rotate player in direction he is shooting
                 player_trans.look_to(-direction, Vec3::Y);
 
-                let sound = assets.load("audio/shoot.ogg");
-                audio.play_with_settings(
-                    sound,
-                    PlaybackSettings {
-                        volume: 0.5,
+                cmds.spawn(AudioBundle {
+                    source: assets.load(r"audio\shoot.ogg"),
+                    settings: PlaybackSettings {
+                        volume: Volume::Relative(VolumeLevel::new(0.5)),
                         ..default()
                     },
-                );
+                    ..default()
+                });
 
                 is_shooting.0 = true;
             }

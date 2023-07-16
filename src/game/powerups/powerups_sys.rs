@@ -187,12 +187,14 @@ pub fn spawn_dmg_powerup_duration_display(mut cmds: Commands, assets: Res<AssetS
         style: Style {
             display: Display::None,
             position_type: PositionType::Absolute,
-            position: UiRect::new(
-                Val::Percent(1.2),
-                Val::Undefined,
-                Val::Percent(13.0),
-                Val::Undefined,
-            ),
+            left: Val::Percent(1.2),
+            top: Val::Percent(13.0),
+            // position: UiRect::new(
+            //     Val::Percent(1.2),
+            //     Val::Undefined,
+            //     Val::Percent(13.0),
+            //     Val::Undefined,
+            // ),
             ..default()
         },
         ..default()
@@ -269,7 +271,8 @@ fn powerup_txt(assets: &Res<AssetServer>, txt: String) -> TextBundle {
         ),
         style: Style {
             align_self: AlignSelf::Center,
-            position: UiRect::left(Val::Percent(55.0)),
+            left: Val::Percent(55.0),
+            // position: UiRect::left(Val::Percent(55.0)),
             ..default()
         },
         ..default()
