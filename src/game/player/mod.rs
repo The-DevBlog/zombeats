@@ -21,7 +21,7 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<KillCount>()
-            .add_systems(OnEnter(AppState::Game), (spawn, reset_killcount))
+            .add_systems(OnEnter(AppState::Game), (spawn_player, reset_killcount))
             .add_systems(
                 Update,
                 (
@@ -30,7 +30,7 @@ impl Plugin for PlayerPlugin {
                     gamepad_movement,
                     update_stamina,
                     increase_killcount,
-                    death,
+                    player_death,
                 )
                     .run_if(in_state(AppState::Game)),
             );

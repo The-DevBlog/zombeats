@@ -6,7 +6,7 @@ use crate::game::game_cmps::{Hp, Speed};
 use crate::game::game_evs::GameOver;
 use crate::gamepad::gamepad_rcs::MyGamepad;
 
-pub fn spawn(mut cmds: Commands, assets: Res<AssetServer>) {
+pub fn spawn_player(mut cmds: Commands, assets: Res<AssetServer>) {
     cmds.spawn((
         SceneBundle {
             scene: assets.load("models/Player.gltf#Scene0"),
@@ -171,7 +171,7 @@ pub fn update_stamina(
     }
 }
 
-pub fn death(player_q: Query<&Hp, With<Player>>, mut game_over_evw: EventWriter<GameOver>) {
+pub fn player_death(player_q: Query<&Hp, With<Player>>, mut game_over_evw: EventWriter<GameOver>) {
     if let Ok(hp) = player_q.get_single() {
         if hp.value <= 0.0 {
             game_over_evw.send(GameOver);

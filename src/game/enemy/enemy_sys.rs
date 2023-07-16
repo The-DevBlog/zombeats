@@ -10,20 +10,7 @@ use crate::game::{
 
 use super::{enemy_cmps::*, enemy_evs::*, enemy_res::*, *};
 
-/// Increase HP over time to raise difficulty
-pub fn increase_hp_over_time(
-    mut timer: ResMut<RaiseDifficultyTimer>,
-    mut enemy_hp: ResMut<EnemyHp>,
-    time: Res<Time>,
-) {
-    if timer.0.just_finished() {
-        enemy_hp.0 += HP_GAIN;
-    }
-
-    timer.0.tick(time.delta());
-}
-
-pub fn spawn(
+pub fn spawn_enemy(
     mut cmds: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -52,10 +39,22 @@ pub fn spawn(
                 transform: Transform::from_xyz(x, 0.5, z),
                 ..default()
             },
-            EnemyBundle::default(),
-            Hp::new(enemy_hp.0),
+            EnemyBundle::new(enemy_hp.0),
         ));
     }
+}
+
+/// Increase HP over time to raise difficulty
+pub fn increase_hp_over_time(
+    mut timer: ResMut<RaiseDifficultyTimer>,
+    mut enemy_hp: ResMut<EnemyHp>,
+    time: Res<Time>,
+) {
+    if timer.0.just_finished() {
+        enemy_hp.0 += HP_GAIN;
+    }
+
+    timer.0.tick(time.delta());
 }
 
 /// Track towards player

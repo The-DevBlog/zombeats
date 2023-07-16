@@ -3,7 +3,7 @@ use bevy_rapier3d::prelude::{Collider, RigidBody};
 
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 
-use super::{enemy_res::EnemyHp, ENEMY_ATTACK_RATE, ENEMY_SIZE, ENEMY_SPEED};
+use super::{ENEMY_ATTACK_RATE, ENEMY_SIZE, ENEMY_SPEED};
 
 #[derive(Bundle)]
 pub struct EnemyBundle {
@@ -12,14 +12,14 @@ pub struct EnemyBundle {
     pub damage: Damage,
     pub enemy: Enemy,
     pub game: Game,
-    // pub hp: Hp,
+    pub hp: Hp,
     pub name: Name,
     pub rigid_body: RigidBody,
     pub speed: Speed,
 }
 
-impl Default for EnemyBundle {
-    fn default() -> Self {
+impl EnemyBundle {
+    pub fn new(hp: f32) -> Self {
         let size_half = ENEMY_SIZE / 2.0;
 
         Self {
@@ -28,7 +28,7 @@ impl Default for EnemyBundle {
             damage: Damage::new(10.0),
             enemy: Enemy,
             game: Game,
-            // hp: Hp::new(10.0),
+            hp: Hp::new(hp),
             name: Name::new("Enemy"),
             rigid_body: RigidBody::Dynamic,
             speed: Speed(ENEMY_SPEED),
