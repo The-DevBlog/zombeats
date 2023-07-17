@@ -28,12 +28,19 @@ use powerups::PowerUpsPlugin;
 use projectile::ProjectilePlugin;
 use world::WorldPlugin;
 
+use crate::main_res::IsDebugMode;
 use crate::AppState;
-
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
+        // determine if debug mode is on
+        let is_debug_mode = app
+            .world
+            .get_resource::<IsDebugMode>()
+            .map(|debug| debug.0)
+            .unwrap_or(false);
+
         app.init_resource::<GameTime>()
             .add_event::<GameOver>()
             .add_plugins((
@@ -45,7 +52,10 @@ impl Plugin for GamePlugin {
                 PlayerPlugin,
                 ProjectilePlugin,
                 RapierPhysicsPlugin::<NoUserData>::default(),
-                RapierDebugRenderPlugin::default(),
+                RapierDebugRenderPlugin {
+                    enabled: is_debug_mode,
+                    ..default()
+                },
                 WorldPlugin,
             ))
             .add_systems(

@@ -6,28 +6,33 @@ mod game;
 pub mod game_over;
 pub mod gamepad;
 mod main_menu;
+mod main_res;
 
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use game::GamePlugin;
 use game_over::GameOverPlugin;
 use gamepad::GamepadPlugin;
 use main_menu::MainMenuPlugin;
+use main_res::IsDebugMode;
 
 fn main() {
+    // debug mode
+    let args: Vec<String> = std::env::args().collect();
+    let is_debug = args.iter().any(|arg| arg == "debug");
+
     App::new()
+        .insert_resource(IsDebugMode::new(is_debug))
         .add_state::<AppState>()
         .add_plugins(DefaultPlugins.set(AssetPlugin {
             // You can now give it a configurable delay. This is a safe default.
             watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
             ..default()
         }))
-        .add_plugins((
-            GamepadPlugin,
-            MainMenuPlugin,
-            // WorldInspectorPlugin::new(),
-            GamePlugin,
-            GameOverPlugin,
+        .add_plugins(WorldInspectorPlugin::run_if(
+            WorldInspectorPlugin::new(),
+            resource_equals(IsDebugMode(true)),
         ))
+        .add_plugins((GamepadPlugin, MainMenuPlugin, GamePlugin, GameOverPlugin))
         .run();
 }
 
