@@ -35,6 +35,7 @@ pub fn game_over(
     }
 }
 
+/// despawn all entities with a game component when exiting AppState::Game
 pub fn despawn_game(mut cmds: Commands, all_q: Query<Entity, With<Game>>) {
     for ent in all_q.iter() {
         cmds.entity(ent).despawn_recursive();
