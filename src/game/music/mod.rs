@@ -5,7 +5,7 @@ mod music_sys;
 
 use music_sys::*;
 
-use crate::{main_res::IsDebugMode, AppState};
+use crate::{debug::debug_res::EnableDebugMode, AppState};
 
 pub struct MusicPlugin;
 
@@ -14,7 +14,7 @@ impl Plugin for MusicPlugin {
         app.add_systems(OnEnter(AppState::Game), stop_music.before(play_music))
             .add_systems(
                 OnEnter(AppState::Game),
-                play_music.run_if(resource_equals(IsDebugMode(false))),
+                play_music.run_if(resource_equals(EnableDebugMode(false))),
             );
     }
 }

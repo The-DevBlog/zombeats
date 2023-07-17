@@ -1,11 +1,15 @@
+use crate::{
+    debug::{
+        debug_res::{DebugProps, EnableDebugMode},
+        debug_sys::unlock_cursor_condition,
+    },
+    AppState,
+};
 use bevy::prelude::*;
+use camera_sys::*;
 
 pub mod camera_cmps;
 mod camera_sys;
-
-use camera_sys::*;
-
-use crate::AppState;
 
 pub struct CameraPlugin;
 
@@ -15,7 +19,7 @@ impl Plugin for CameraPlugin {
             Update,
             (
                 orbit_gamepad,
-                orbit_mouse,
+                orbit_mouse.run_if(unlock_cursor_condition()),
                 sync_player_camera,
                 zoom_gamepad,
                 zoom_mouse,
