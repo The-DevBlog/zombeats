@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use bevy::window::WindowMode;
 use bevy::{asset::ChangeWatcher, prelude::*};
 
 pub mod debug;
@@ -25,11 +26,21 @@ fn main() {
         .insert_resource(EnableDebugMode::new(is_debug))
         .init_resource::<DebugProps>()
         .add_state::<AppState>()
-        .add_plugins(DefaultPlugins.set(AssetPlugin {
-            // You can now give it a configurable delay. This is a safe default.
-            watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(AssetPlugin {
+                    // You can now give it a configurable delay. This is a safe default.
+                    watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        mode: WindowMode::Fullscreen,
+                        ..default()
+                    }),
+                    ..default()
+                }),
+        )
         .add_plugins(WorldInspectorPlugin::run_if(
             WorldInspectorPlugin::new(),
             resource_equals(EnableDebugMode(true)),
