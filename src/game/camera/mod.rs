@@ -1,10 +1,4 @@
-use crate::{
-    debug::{
-        debug_res::{DebugProps, EnableDebugMode},
-        debug_sys::unlock_cursor_condition,
-    },
-    AppState,
-};
+use crate::{debug::debug_sys::unlock_cursor_condition, AppState};
 use bevy::prelude::*;
 use camera_sys::*;
 

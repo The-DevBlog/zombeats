@@ -3,7 +3,7 @@ use bevy::{
     window::{CursorGrabMode, PrimaryWindow},
 };
 
-use super::debug_res::{DebugProps, EnableDebugMode};
+use super::debug_res::DebugProps;
 
 /// unlock cursor when space key is pressed.
 pub fn unlock_cursor(
@@ -22,8 +22,6 @@ pub fn unlock_cursor(
     }
 }
 
-pub fn unlock_cursor_condition() -> impl Fn(Res<DebugProps>, Res<EnableDebugMode>) -> bool {
-    move |debug_props: Res<DebugProps>, enable_debug: Res<EnableDebugMode>| {
-        debug_props.lock_cursor && enable_debug.0
-    }
+pub fn unlock_cursor_condition() -> impl Fn(Res<DebugProps>) -> bool {
+    move |debug_props: Res<DebugProps>| debug_props.lock_cursor
 }
