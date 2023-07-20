@@ -35,7 +35,8 @@ pub fn keyboard_movement(
     >,
     cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
 ) {
-    for (mut player_trans, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut() {
+    for (mut player_transform, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut()
+    {
         let cam = match cam_q.get_single() {
             Ok(c) => c,
             Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
@@ -45,22 +46,22 @@ pub fn keyboard_movement(
 
         // forward
         if keys.pressed(KeyCode::W) {
-            direction += cam.forward().normalize();
+            direction += cam.forward();
         }
 
         // back
         if keys.pressed(KeyCode::S) {
-            direction += cam.back().normalize();
+            direction += cam.back();
         }
 
         // left
         if keys.pressed(KeyCode::A) {
-            direction += cam.left().normalize();
+            direction += cam.left();
         }
 
         // right
         if keys.pressed(KeyCode::D) {
-            direction += cam.right().normalize();
+            direction += cam.right();
         }
 
         // sprint
@@ -71,11 +72,12 @@ pub fn keyboard_movement(
         }
 
         direction.y = 0.0;
-        player_trans.translation += speed.0 * sprint * direction * time.delta_seconds();
+        let movement = direction.normalize_or_zero() * sprint * speed.0 * time.delta_seconds();
+        player_transform.translation += movement;
 
         // rotate player to face direction he is currently moving
         if direction.length_squared() > 0.0 && !is_shooting.0 {
-            player_trans.look_to(direction, Vec3::Y);
+            player_transform.look_to(direction, Vec3::Y);
         }
     }
 }
