@@ -1,10 +1,10 @@
 use super::player_res::KillCount;
 use super::{player_cmps::*, *};
-use crate::game::camera::camera_cmps::CustomCamera;
 use crate::game::enemy::enemy_evs::{EnemyDeathEv, HitPlayerEv};
 use crate::game::game_cmps::{Hp, Speed};
 use crate::game::game_evs::GameOver;
 use crate::gamepad::gamepad_rcs::MyGamepad;
+use bevy_third_person_camera::{ThirdPersonCamera, ThirdPersonCameraTarget};
 
 pub fn spawn_player(mut cmds: Commands, assets: Res<AssetServer>) {
     cmds.spawn((
@@ -16,6 +16,7 @@ pub fn spawn_player(mut cmds: Commands, assets: Res<AssetServer>) {
             },
             ..default()
         },
+        ThirdPersonCameraTarget,
         PlayerBundle::default(),
     ));
 }
@@ -33,7 +34,7 @@ pub fn keyboard_movement(
         ),
         With<Player>,
     >,
-    cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
+    cam_q: Query<&Transform, (With<ThirdPersonCamera>, Without<Player>)>,
 ) {
     for (mut player_transform, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut()
     {
@@ -87,7 +88,7 @@ pub fn gamepad_movement(
     axis: Res<Axis<GamepadAxis>>,
     btns: Res<Input<GamepadButton>>,
     mut player_q: Query<(&mut Transform, &Speed, &mut IsSprinting, &Stamina), With<Player>>,
-    cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
+    cam_q: Query<&Transform, (With<ThirdPersonCamera>, Without<Player>)>,
     my_gamepad: Option<Res<MyGamepad>>,
 ) {
     // return id of gamepad if one is connected

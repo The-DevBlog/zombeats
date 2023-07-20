@@ -2,10 +2,10 @@ use bevy::{
     audio::{Volume, VolumeLevel},
     prelude::*,
 };
+use bevy_third_person_camera::ThirdPersonCamera;
 
 use crate::{
     game::{
-        camera::camera_cmps::CustomCamera,
         enemy::{enemy_cmps::Enemy, ENEMY_SIZE},
         game_cmps::{Damage, Game},
         player::player_cmps::{IsShooting, Player},
@@ -29,7 +29,7 @@ pub fn shoot_projectile(
     mut materials: ResMut<Assets<StandardMaterial>>,
     my_gamepad: Option<Res<MyGamepad>>,
     mut player_q: Query<(&mut Transform, &mut IsShooting), With<Player>>,
-    cam_q: Query<&Transform, (With<CustomCamera>, Without<Player>)>,
+    cam_q: Query<&Transform, (With<ThirdPersonCamera>, Without<Player>)>,
 ) {
     // return id of gamepad if one is connected
     let gamepad = if let Some(gp) = my_gamepad {

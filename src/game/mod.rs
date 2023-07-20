@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::{NoUserData, RapierPhysicsPlugin};
-
 use bevy_rapier3d::render::RapierDebugRenderPlugin;
+use bevy_third_person_camera::ThirdPersonCameraPlugin;
 
 pub mod camera;
 pub mod enemy;
@@ -57,6 +57,7 @@ impl Plugin for GamePlugin {
                     enabled: is_debug_mode,
                     ..default()
                 },
+                ThirdPersonCameraPlugin,
                 WorldPlugin,
             ))
             .add_systems(
