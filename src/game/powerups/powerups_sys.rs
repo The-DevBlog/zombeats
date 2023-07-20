@@ -189,12 +189,6 @@ pub fn spawn_dmg_powerup_duration_display(mut cmds: Commands, assets: Res<AssetS
             position_type: PositionType::Absolute,
             left: Val::Percent(1.2),
             top: Val::Percent(13.0),
-            // position: UiRect::new(
-            //     Val::Percent(1.2),
-            //     Val::Undefined,
-            //     Val::Percent(13.0),
-            //     Val::Undefined,
-            // ),
             ..default()
         },
         ..default()

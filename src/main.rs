@@ -22,6 +22,12 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let is_debug = args.iter().any(|arg| arg == "debug");
 
+    let window_mode = if is_debug {
+        WindowMode::Windowed
+    } else {
+        WindowMode::BorderlessFullscreen
+    };
+
     App::new()
         .insert_resource(EnableDebugMode::new(is_debug))
         .init_resource::<DebugProps>()
@@ -35,7 +41,7 @@ fn main() {
                 })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        mode: WindowMode::Fullscreen,
+                        mode: window_mode,
                         ..default()
                     }),
                     ..default()
