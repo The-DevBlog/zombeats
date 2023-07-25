@@ -5,6 +5,7 @@ use bevy::{
 use bevy_third_person_camera::ThirdPersonCamera;
 
 use crate::{
+    debug::debug_res::EnableDebugMode,
     game::{
         enemy::{enemy_cmps::Enemy, ENEMY_SIZE},
         game_cmps::{Damage, Game},
@@ -89,6 +90,24 @@ pub fn shoot_projectile(
             fire_rate.0.reset();
             is_shooting.0 = false;
         }
+    }
+}
+
+/// Only shoot projectiles if:
+/// 1.) NOT in debug mode
+/// 2.) In debug mode and ThirdPersonCamera.cursor_lock=true
+pub fn shoot_projectile_condition(
+    cam_q: Query<&ThirdPersonCamera, With<Camera3d>>,
+    debug_res: Res<EnableDebugMode>,
+) -> bool {
+    if !debug_res.0 {
+        return true;
+    }
+
+    if let Ok(cam) = cam_q.get_single() {
+        return cam.lock_cursor;
+    } else {
+        return true;
     }
 }
 

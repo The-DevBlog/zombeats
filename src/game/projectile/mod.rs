@@ -5,7 +5,7 @@ pub mod projectile_evs;
 pub mod projectile_res;
 mod projectile_sys;
 
-use crate::{debug::debug_sys::unlock_cursor_condition, AppState};
+use crate::AppState;
 use projectile_evs::*;
 use projectile_res::*;
 use projectile_sys::*;
@@ -23,7 +23,7 @@ impl Plugin for ProjectilePlugin {
             .add_systems(
                 Update,
                 (
-                    shoot_projectile.run_if(unlock_cursor_condition()),
+                    shoot_projectile.run_if(shoot_projectile_condition),
                     move_projectile,
                     hit_enemy,
                     despawn_projectile,

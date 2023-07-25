@@ -29,7 +29,6 @@ use projectile::ProjectilePlugin;
 use world::WorldPlugin;
 
 use crate::debug::debug_res::EnableDebugMode;
-use crate::debug::debug_sys::unlock_cursor_condition;
 use crate::AppState;
 pub struct GamePlugin;
 
@@ -62,12 +61,7 @@ impl Plugin for GamePlugin {
             ))
             .add_systems(
                 Update,
-                (
-                    exit_game,
-                    hide_cursor.run_if(unlock_cursor_condition()),
-                    game_over,
-                )
-                    .run_if(in_state(AppState::Game)),
+                (exit_game, game_over).run_if(in_state(AppState::Game)),
             )
             .add_systems(OnExit(AppState::Game), (despawn_game, show_cursor));
     }
