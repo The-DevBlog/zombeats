@@ -11,7 +11,6 @@ mod main_menu;
 
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use debug::debug_res::*;
-use debug::DebugPlugin;
 use game::GamePlugin;
 use game_over::GameOverPlugin;
 use gamepad::GamepadPlugin;
@@ -51,13 +50,7 @@ fn main() {
             WorldInspectorPlugin::new(),
             resource_equals(EnableDebugMode(true)),
         ))
-        .add_plugins((
-            DebugPlugin,
-            GamepadPlugin,
-            GamePlugin,
-            GameOverPlugin,
-            MainMenuPlugin,
-        ))
+        .add_plugins((GamepadPlugin, GamePlugin, GameOverPlugin, MainMenuPlugin))
         .run();
 }
 

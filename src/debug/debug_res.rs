@@ -10,12 +10,10 @@ impl EnableDebugMode {
 }
 
 #[derive(Resource, PartialEq)]
-pub struct DebugProps {
-    pub lock_cursor: bool,
-}
+pub struct DebugProps {}
 
 impl Default for DebugProps {
     fn default() -> Self {
-        Self { lock_cursor: true }
+        Self {}
     }
 }
