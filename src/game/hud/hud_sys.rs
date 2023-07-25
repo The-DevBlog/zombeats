@@ -39,15 +39,15 @@ pub fn spawn_health_bar(mut cmds: Commands, assets: Res<AssetServer>) {
     let container = create_container(
         Color::BLACK,
         UiRect::left(Val::Percent(1.0)),
-        Val::Px(127.5),
-        Val::Px(42.5),
+        Val::Percent(10.0),
+        Val::Percent(4.0),
     );
 
     let fill = create_container(
         Color::RED,
-        UiRect::new(Val::Percent(1.0), Val::Auto, Val::Percent(3.0), Val::Auto),
-        Val::Px(125.0),
-        Val::Px(40.0),
+        UiRect::new(Val::Percent(0.75), Val::Auto, Val::Percent(1.5), Val::Auto),
+        Val::Percent(99.0),
+        Val::Percent(99.0),
     );
 
     let txt = create_txt(&assets);
@@ -62,42 +62,17 @@ pub fn spawn_health_bar(mut cmds: Commands, assets: Res<AssetServer>) {
 pub fn spawn_stamina_bar(mut cmds: Commands, assets: Res<AssetServer>) {
     let container = create_container(
         Color::BLACK,
-        UiRect::right(Val::Percent(0.5)),
-        Val::Px(127.5),
-        Val::Px(42.5),
+        UiRect::left(Val::Percent(89.0)),
+        Val::Percent(10.0),
+        Val::Percent(4.0),
     );
 
-    let fill = NodeBundle {
-        background_color: Color::DARK_GREEN.into(),
-        style: Style {
-            align_self: AlignSelf::FlexStart,
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            padding: UiRect::all(Val::Px(20.0)),
-            // left: position.left,
-            // right: Val::Percent(1.0),
-            // top: Val::Percent(3.0),
-            // bottom: position.bottom,
-            position_type: PositionType::Absolute,
-            width: Val::Px(125.0),
-            height: Val::Px(40.0),
-            ..default()
-        },
-
-        ..default()
-    };
-    // let fill = create_container(
-    //     Color::DARK_GREEN,
-    //     UiRect::new(
-    //         // Val::Undefined,
-    //         // Val::Auto,
-    //         Val::Percent(1.0),
-    //         Val::Percent(3.0),
-    //         // Val::Auto, // Val::Undefined,
-    //     ),
-    //     Val::Px(125.0),
-    //     Val::Px(40.0), // Size::new(Val::Px(125.0), Val::Px(40.0)),
-    // );
+    let fill = create_container(
+        Color::DARK_GREEN,
+        UiRect::new(Val::Auto, Val::Percent(0.75), Val::Percent(1.5), Val::Auto),
+        Val::Percent(99.0),
+        Val::Percent(99.0),
+    );
 
     let txt = create_txt(&assets);
 
