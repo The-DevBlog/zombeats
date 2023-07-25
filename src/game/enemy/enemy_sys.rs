@@ -85,7 +85,8 @@ pub fn attack(
         if let Ok(player_trans) = player.get_single_mut() {
             let distance = Vec3::distance(enemy_trans.translation, player_trans.translation);
 
-            if distance < ENEMY_SIZE {
+            let buffer = 0.1;
+            if distance < ENEMY_SIZE + buffer {
                 if attack_rate.0.percent_left() == 1.0 {
                     // fire hit player event
                     hit_player_ev.send(HitPlayerEv(enemy_dmg.value));
