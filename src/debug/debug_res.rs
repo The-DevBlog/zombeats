@@ -10,10 +10,12 @@ impl EnableDebugMode {
 }
 
 #[derive(Resource, PartialEq)]
-pub struct DebugProps {}
+pub struct DebugProps {
+    pub enemies: bool,
+}
 
 impl Default for DebugProps {
     fn default() -> Self {
-        Self {}
+        Self { enemies: false }
     }
 }

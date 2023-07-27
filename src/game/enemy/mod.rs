@@ -5,7 +5,10 @@ pub mod enemy_evs;
 pub mod enemy_res;
 mod enemy_sys;
 
-use crate::{debug::debug_res::EnableDebugMode, AppState};
+use crate::{
+    debug::debug_res::{DebugProps, EnableDebugMode},
+    AppState,
+};
 use enemy_evs::*;
 use enemy_res::*;
 use enemy_sys::*;
@@ -33,7 +36,7 @@ impl Plugin for EnemyPlugin {
                 (
                     decrease_hp,
                     despawn,
-                    spawn_enemy.run_if(resource_equals(EnableDebugMode(false))),
+                    spawn_enemy.run_if(spawn_enemy_condition),
                     tracking,
                     attack,
                     increase_hp_over_time,

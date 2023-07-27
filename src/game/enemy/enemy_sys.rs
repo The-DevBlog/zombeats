@@ -44,6 +44,16 @@ pub fn spawn_enemy(
     }
 }
 
+/// Only spawn enemies if:
+/// 1.) NOT in debug mode
+/// 2.) In debug mode and DebugProps.enemies=true
+pub fn spawn_enemy_condition(
+    debug_props: Res<DebugProps>,
+    debug_enable: Res<EnableDebugMode>,
+) -> bool {
+    !debug_enable.0 || debug_props.enemies
+}
+
 /// Increase HP over time to raise difficulty
 pub fn increase_hp_over_time(
     mut timer: ResMut<RaiseDifficultyTimer>,

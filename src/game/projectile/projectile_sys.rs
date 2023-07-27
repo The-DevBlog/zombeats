@@ -100,15 +100,7 @@ pub fn shoot_projectile_condition(
     cam_q: Query<&ThirdPersonCamera, With<Camera3d>>,
     debug_res: Res<EnableDebugMode>,
 ) -> bool {
-    if !debug_res.0 {
-        return true;
-    }
-
-    if let Ok(cam) = cam_q.get_single() {
-        return cam.lock_cursor;
-    } else {
-        return true;
-    }
+    !debug_res.0 || cam_q.get_single().map_or(true, |cam| cam.lock_cursor)
 }
 
 pub fn move_projectile(
