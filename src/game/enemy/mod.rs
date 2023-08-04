@@ -14,7 +14,8 @@ use enemy_res::*;
 use enemy_sys::*;
 
 pub const ENEMY_SPAWN_TIME: f32 = 2.0;
-pub const ENEMY_SPEED: f32 = 2.6; // slightly faster than player
+// pub const ENEMY_SPEED: f32 = 2.6; // slightly faster than player
+pub const ENEMY_SPEED: f32 = 0.0; // slightly faster than player
 pub const ENEMY_HP: f32 = 100.0;
 pub const ENEMY_SIZE: f32 = 0.5;
 pub const ENEMY_ATTACK_RATE: f32 = 2.0;
@@ -30,13 +31,17 @@ impl Plugin for EnemyPlugin {
             .init_resource::<EnemyHp>()
             .add_event::<HitPlayerEv>()
             .add_event::<EnemyDeathEv>()
-            .add_systems(OnEnter(AppState::Game), reset_hp)
+            .add_systems(
+                OnEnter(AppState::Game),
+                (reset_hp, spawn_enemy.run_if(spawn_enemy_condition)),
+            )
             .add_systems(
                 Update,
                 (
+                    draw,
                     decrease_hp,
                     despawn,
-                    spawn_enemy.run_if(spawn_enemy_condition),
+                    // spawn_enemy.run_if(spawn_enemy_condition),
                     tracking,
                     attack,
                     increase_hp_over_time,

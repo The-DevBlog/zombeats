@@ -16,6 +16,6 @@ pub struct DebugProps {
 
 impl Default for DebugProps {
     fn default() -> Self {
-        Self { enemies: false }
+        Self { enemies: true }
     }
 }

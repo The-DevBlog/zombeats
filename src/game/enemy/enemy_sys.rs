@@ -1,14 +1,60 @@
 use bevy::prelude::*;
+use bevy_rapier3d::{parry::query::IntersectResult, prelude::*};
 use rand::Rng;
 
 use crate::game::{
     game_cmps::{Damage, Hp, Speed},
-    player::player_cmps::Player,
+    player::{player_cmps::Player, PLAYER_SIZE},
     projectile::projectile_evs::HitEv,
     world::MAP_SIZE,
 };
 
 use super::{enemy_cmps::*, enemy_evs::*, enemy_res::*, *};
+
+pub fn draw(
+    mut cmds: Commands,
+    mut gizmos: Gizmos,
+    enemy_q: Query<&Transform, With<Enemy>>,
+    player_q: Query<&Transform, With<Player>>,
+    rapier_res: Res<RapierContext>,
+    transform_q: Query<&mut Transform, (Without<Player>, Without<Enemy>)>,
+) {
+    if let Ok(enemy_transform) = enemy_q.get_single() {
+        if let Ok(player_transform) = player_q.get_single() {
+            let mut enemy_translation = enemy_transform.translation;
+            let mut player_translation = player_transform.translation;
+            enemy_translation.y = ENEMY_SIZE / 2.0;
+            player_translation.y = PLAYER_SIZE / 2.0;
+
+            let direction = player_translation - enemy_translation;
+
+            // cast ray
+            let hit = rapier_res.cast_ray_and_get_normal(
+                enemy_translation,
+                direction,
+                1.0,
+                false,
+                QueryFilter::exclude_dynamic(),
+            );
+
+            // if a ray intersects with an obstacle
+            if let Some((ent, intersection)) = hit {
+                cmds.entity(ent).insert(ColliderDebugColor(Color::GREEN));
+
+                let direction = intersection.point - enemy_translation;
+                gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
+
+                // cast ray from center of intersected entity to the player
+                if let Ok(ent_transform) = transform_q.get(ent) {
+                    let direction = player_translation - ent_transform.translation;
+                    gizmos.ray(ent_transform.translation, direction, Color::CRIMSON);
+                }
+            } else {
+                gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
+            }
+        }
+    }
+}
 
 pub fn spawn_enemy(
     mut cmds: Commands,
@@ -26,22 +72,22 @@ pub fn spawn_enemy(
     let x = rng.gen_range(-map_bounds..=map_bounds);
     let z = rng.gen_range(-map_bounds..=map_bounds);
 
-    if spawn_timer.0.finished() {
-        let size_half = ENEMY_SIZE / 2.0;
-        cmds.spawn((
-            PbrBundle {
-                material: materials.add(Color::RED.into()),
-                mesh: meshes.add(Mesh::from(shape::Capsule {
-                    radius: size_half,
-                    depth: size_half,
-                    ..default()
-                })),
-                transform: Transform::from_xyz(x, 0.5, z),
+    // if spawn_timer.0.finished() {
+    let size_half = ENEMY_SIZE / 2.0;
+    cmds.spawn((
+        PbrBundle {
+            material: materials.add(Color::RED.into()),
+            mesh: meshes.add(Mesh::from(shape::Capsule {
+                radius: size_half,
+                depth: size_half,
                 ..default()
-            },
-            EnemyBundle::new(enemy_hp.0),
-        ));
-    }
+            })),
+            transform: Transform::from_xyz(x, 0.5, z),
+            ..default()
+        },
+        EnemyBundle::new(enemy_hp.0),
+    ));
+    // }
 }
 
 /// Only spawn enemies if:

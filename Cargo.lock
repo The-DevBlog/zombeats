@@ -976,9 +976,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_third_person_camera"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34d72654e0a3f232a453f0c206fd78d56925f016685fccc5bf597ddfc127b588"
+checksum = "45cfc4bf1fc2296d3f19cb899a05daa90fdde272a5ab64c30d0b6217f2fc1cc2"
 dependencies = [
  "bevy",
 ]
