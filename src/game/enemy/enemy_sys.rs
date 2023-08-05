@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier3d::{parry::query::IntersectResult, prelude::*};
+use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
 use crate::game::{
@@ -26,7 +26,7 @@ pub fn draw(
             enemy_translation.y = ENEMY_SIZE / 2.0;
             player_translation.y = PLAYER_SIZE / 2.0;
 
-            let direction = player_translation - enemy_translation;
+            let mut direction = player_translation - enemy_translation;
 
             // cast ray
             let hit = rapier_res.cast_ray_and_get_normal(
@@ -41,18 +41,82 @@ pub fn draw(
             if let Some((ent, intersection)) = hit {
                 cmds.entity(ent).insert(ColliderDebugColor(Color::GREEN));
 
-                let direction = intersection.point - enemy_translation;
-                gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
+                direction = intersection.point - enemy_translation;
+                // gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
+
+                // let angle_offset = 0.1;
+                // let left_offset = Vec3::new(-direction.z, 0.0, direction.x).normalize();
+                // let right_offset = -left_offset;
+                // let left_direction = direction + left_offset * angle_offset;
+                // let right_direction = direction + right_offset * angle_offset;
+
+                // gizmos.ray(enemy_translation, left_direction, Color::RED);
+                // gizmos.ray(enemy_translation, right_direction, Color::BLUE);
 
                 // cast ray from center of intersected entity to the player
                 if let Ok(ent_transform) = transform_q.get(ent) {
-                    let direction = player_translation - ent_transform.translation;
-                    gizmos.ray(ent_transform.translation, direction, Color::CRIMSON);
+                    find_path(
+                        direction,
+                        enemy_translation,
+                        ent_transform.translation,
+                        &mut gizmos,
+                        &rapier_res,
+                    );
+                    // let direction = player_translation - ent_transform.translation;
+                    // gizmos.ray(ent_transform.translation, direction, Color::CRIMSON);
                 }
             } else {
-                gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
+                // gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
             }
+            gizmos.ray(enemy_translation, direction, Color::ORANGE_RED);
         }
+    }
+}
+
+fn find_path(
+    direction: Vec3,
+    enemy_translation: Vec3,
+    intersection_translation: Vec3,
+    gizmos: &mut Gizmos,
+    rapier_res: &RapierContext,
+) {
+    let angle_offset = 0.1;
+    let left_offset = Vec3::new(-direction.z, 0.0, direction.x).normalize();
+    let right_offset = -left_offset;
+    let mut left_direction = direction + left_offset * angle_offset;
+    let mut right_direction = direction + right_offset * angle_offset;
+
+    // gizmos.ray(enemy_translation, left_direction, Color::RED);
+    // gizmos.ray(enemy_translation, right_direction, Color::BLUE);
+
+    // cast ray
+    let hit = rapier_res.cast_ray_and_get_normal(
+        enemy_translation,
+        left_direction,
+        1.0,
+        false,
+        QueryFilter::exclude_dynamic(),
+    );
+
+    if let Some((ent, intersection)) = hit {
+        println!("HIT LEFT");
+        let new_direction = intersection.point - enemy_translation;
+        gizmos.ray(enemy_translation, new_direction, Color::YELLOW);
+    }
+
+    // cast ray
+    let hit = rapier_res.cast_ray_and_get_normal(
+        enemy_translation,
+        right_direction,
+        1.0,
+        false,
+        QueryFilter::exclude_dynamic(),
+    );
+
+    if let Some((ent, intersection)) = hit {
+        println!("HIT RIGHT");
+        let new_direction = intersection.point - enemy_translation;
+        gizmos.ray(enemy_translation, new_direction, Color::GREEN);
     }
 }
 
