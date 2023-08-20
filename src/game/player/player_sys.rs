@@ -38,10 +38,11 @@ pub fn keyboard_movement(
 ) {
     for (mut player_transform, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut()
     {
-        let cam = match cam_q.get_single() {
-            Ok(c) => c,
-            Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
-        };
+        // let cam = match cam_q.get_single() {
+        //     Ok(c) => c,
+        //     Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
+        // };
+        let Ok(cam) = cam_q.get_single() else { return };
 
         let mut direction = Vec3::ZERO;
 
