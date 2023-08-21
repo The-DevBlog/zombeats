@@ -50,7 +50,8 @@ pub fn shoot_projectile(
 
         if right_trigger || mouse.pressed(MouseButton::Left) {
             if fire_rate.0.finished() || fire_rate.0.percent_left() == 1.0 {
-                let direction = Vec3::new(cam_trans.back().x, 0.0, cam_trans.back().z);
+                let direction =
+                    Vec3::new(cam_trans.back().x, cam_trans.back().y, cam_trans.back().z);
                 let projectile = (
                     PbrBundle {
                         material: materials.add(StandardMaterial {

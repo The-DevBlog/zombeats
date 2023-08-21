@@ -1,6 +1,6 @@
 use crate::game::game_cmps::Game;
 use bevy::prelude::*;
-use bevy_third_person_camera::ThirdPersonCamera;
+use bevy_third_person_camera::{Offset, ThirdPersonCamera};
 
 pub fn spawn(mut cmds: Commands) {
     let translation = Vec3::new(0.0, 1.0, 2.0);
@@ -14,6 +14,7 @@ pub fn spawn(mut cmds: Commands) {
             aim_enabled: true,
             offset_enabled: true,
             offset_toggle_enabled: true,
+            offset: Offset::new(0.7, 0.55),
             ..default()
         },
         Name::new("Camera"),
