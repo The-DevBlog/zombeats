@@ -40,7 +40,7 @@ pub fn shoot_projectile(
     };
 
     if let Ok((mut player_trans, mut is_shooting)) = player_q.get_single_mut() {
-        let cam_trans = cam_q.iter().next().unwrap();
+        let Ok(cam_trans) = cam_q.get_single() else { return };
 
         let right_trigger = if let Some(g) = gamepad {
             btns.pressed(GamepadButton::new(g, GamepadButtonType::RightTrigger2))
@@ -50,7 +50,8 @@ pub fn shoot_projectile(
 
         if right_trigger || mouse.pressed(MouseButton::Left) {
             if fire_rate.0.finished() || fire_rate.0.percent_left() == 1.0 {
-                let direction = Vec3::new(cam_trans.back().x, 0.0, cam_trans.back().z);
+                let direction =
+                    Vec3::new(cam_trans.back().x, cam_trans.back().y, cam_trans.back().z);
                 let projectile = (
                     PbrBundle {
                         material: materials.add(StandardMaterial {
@@ -105,7 +106,7 @@ pub fn shoot_projectile_condition(
     }
 
     if let Ok(cam) = cam_q.get_single() {
-        return cam.lock_cursor;
+        return cam.cursor_lock_active;
     } else {
         return true;
     }

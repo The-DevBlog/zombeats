@@ -11,7 +11,7 @@ pub fn spawn_player(mut cmds: Commands, assets: Res<AssetServer>) {
         SceneBundle {
             scene: assets.load("models/Player.gltf#Scene0"),
             transform: Transform {
-                translation: Vec3::new(0.0, 0.25, 0.0),
+                translation: Vec3::new(0.0, 0.5, 0.0),
                 ..default()
             },
             ..default()
@@ -38,10 +38,7 @@ pub fn keyboard_movement(
 ) {
     for (mut player_transform, speed, mut is_sprinting, stamina, is_shooting) in player_q.iter_mut()
     {
-        let cam = match cam_q.get_single() {
-            Ok(c) => c,
-            Err(e) => Err(format!("Error retrieving camera: {}", e)).unwrap(),
-        };
+        let Ok(cam) = cam_q.get_single() else { return };
 
         let mut direction = Vec3::ZERO;
 

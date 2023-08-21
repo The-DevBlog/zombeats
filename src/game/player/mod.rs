@@ -4,7 +4,7 @@ pub mod player_cmps;
 pub mod player_res;
 pub mod player_sys;
 
-use crate::AppState;
+use crate::{gamepad::gamepad_rcs::MyGamepad, AppState};
 use player_res::*;
 use player_sys::*;
 
@@ -27,7 +27,7 @@ impl Plugin for PlayerPlugin {
                 (
                     decrease_hp,
                     keyboard_movement,
-                    gamepad_movement,
+                    gamepad_movement.run_if(resource_exists::<MyGamepad>()),
                     update_stamina,
                     increase_killcount,
                     player_death,

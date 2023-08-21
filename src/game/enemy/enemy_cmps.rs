@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::{Collider, RigidBody};
+use bevy_rapier3d::prelude::*;
 
 use crate::game::game_cmps::{Damage, Game, Hp, Speed};
 
@@ -11,8 +11,10 @@ pub struct EnemyBundle {
     pub collider: Collider,
     pub damage: Damage,
     pub enemy: Enemy,
+    pub friction: Friction,
     pub game: Game,
     pub hp: Hp,
+    pub locked_axes: LockedAxes,
     pub name: Name,
     pub rigid_body: RigidBody,
     pub speed: Speed,
@@ -27,8 +29,10 @@ impl EnemyBundle {
             collider: Collider::cylinder(size_half, size_half),
             damage: Damage::new(10.0),
             enemy: Enemy,
+            friction: Friction::coefficient(0.0),
             game: Game,
             hp: Hp::new(hp),
+            locked_axes: LockedAxes::ROTATION_LOCKED_X | LockedAxes::ROTATION_LOCKED_Z,
             name: Name::new("Enemy"),
             rigid_body: RigidBody::Dynamic,
             speed: Speed(ENEMY_SPEED),
