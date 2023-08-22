@@ -14,6 +14,7 @@ impl Plugin for HudPlugin {
         app.add_systems(
             OnEnter(AppState::Game),
             (
+                spawn_crosshairs,
                 spawn_health_bar,
                 spawn_stamina_bar,
                 spawn_time_display,
