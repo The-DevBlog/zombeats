@@ -52,6 +52,14 @@ pub fn shoot_projectile(
             if fire_rate.0.finished() || fire_rate.0.percent_left() == 1.0 {
                 let direction =
                     Vec3::new(cam_trans.back().x, cam_trans.back().y, cam_trans.back().z);
+
+                let mut projectile_transform = player_trans.clone();
+
+                // because the gun is not directly center mass of a player, an offset needs to be applied
+                let mut offset = cam_trans.left() / 6.0;
+                offset -= cam_trans.forward() / 1.5; // gun barrel length
+                projectile_transform.translation -= offset;
+
                 let projectile = (
                     PbrBundle {
                         material: materials.add(StandardMaterial {
@@ -62,7 +70,7 @@ pub fn shoot_projectile(
                             radius: 0.025,
                             ..default()
                         })),
-                        transform: Transform::from_translation(player_trans.translation),
+                        transform: Transform::from_translation(projectile_transform.translation),
                         ..default()
                     },
                     Projectile { direction },

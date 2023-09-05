@@ -7,6 +7,32 @@ use crate::game::{
     player::{player_cmps::*, player_res::KillCount},
 };
 
+pub fn spawn_crosshairs(mut cmds: Commands, assets: Res<AssetServer>) {
+    let crosshairs = (
+        ImageBundle {
+            image: assets.load("imgs/crosshairs.png").into(),
+            style: Style {
+                align_self: AlignSelf::Center,
+                margin: UiRect {
+                    left: Val::Auto,
+                    right: Val::Auto,
+                    top: Val::Auto,
+                    bottom: Val::Auto,
+                },
+                top: Val::Vh(3.0),
+                position_type: PositionType::Absolute,
+                width: Val::Percent(3.0),
+                height: Val::Percent(5.0),
+                ..default()
+            },
+            ..default()
+        },
+        Name::new("Crosshairs"),
+    );
+
+    cmds.spawn(crosshairs);
+}
+
 pub fn spawn_kill_count(mut cmds: Commands, assets: Res<AssetServer>) {
     let txt = TextBundle {
         text: Text::from_section(

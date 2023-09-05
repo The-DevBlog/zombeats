@@ -12,9 +12,12 @@ pub fn spawn(mut cmds: Commands) {
         },
         ThirdPersonCamera {
             aim_enabled: true,
+            aim_zoom: 1.0,
             offset_enabled: true,
             offset_toggle_enabled: true,
-            offset: Offset::new(0.7, 0.55),
+            offset_toggle_speed: 8.0,
+            offset: Offset::new(0.7, 0.5),
+            zoom_enabled: false,
             ..default()
         },
         Name::new("Camera"),
