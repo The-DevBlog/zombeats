@@ -12,8 +12,6 @@ pub fn spawn_crosshairs(mut cmds: Commands, assets: Res<AssetServer>) {
         ImageBundle {
             image: assets.load("imgs/crosshairs.png").into(),
             style: Style {
-                // align_items: AlignItems::Center,
-                // justify_content: JustifyContent::Center,
                 align_self: AlignSelf::Center,
                 margin: UiRect {
                     left: Val::Auto,
@@ -21,7 +19,8 @@ pub fn spawn_crosshairs(mut cmds: Commands, assets: Res<AssetServer>) {
                     top: Val::Auto,
                     bottom: Val::Auto,
                 },
-
+                top: Val::Vh(3.0),
+                position_type: PositionType::Absolute,
                 width: Val::Percent(3.0),
                 height: Val::Percent(5.0),
                 ..default()
